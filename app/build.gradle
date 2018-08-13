@@ -20,13 +20,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "com.android.support:appcompat-v7:$androidSupportVersion"
+    implementation "com.android.support:support-annotations:$androidSupportVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayout"
+    implementation "com.android.support:design:$androidSupportVersion"
+
+    //RxJava
+    implementation "com.google.guava:guava:$rootProject.guavaVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjavaVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
+
+    //Android Components
+    implementation "android.arch.lifecycle:extensions:$rootProject.lifecycle_version"
+    implementation  "android.arch.persistence.room:runtime:$rootProject.lifecycle_version"
+    implementation "android.arch.persistence.room:rxjava2:$rootProject.lifecycle_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.lifecycle_version"
+
+    //Play Services
+    implementation "com.google.android.gms:play-services-location:15.0.1"
+
+    //Test
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
