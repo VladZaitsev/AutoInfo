@@ -1,10 +1,10 @@
 package com.baikaleg.v3.autoinfo.ui.main
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import com.baikaleg.v3.autoinfo.R
-
+import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -14,10 +14,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        /*fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }*/
+        val viewModel: MainActivityModel = MainActivityModel.create(this)
+        val binding: ActivityMainBinding =
+                DataBindingUtil.setContentView(this,R.layout.activity_main)
+        binding.viewModel = viewModel
+        binding.setLifecycleOwner(this)
     }
-
 }
