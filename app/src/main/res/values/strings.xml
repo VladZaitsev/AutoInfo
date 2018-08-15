@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">AutoInfo</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="cd_start_stop_btn">Press this button for stop or start trip</string>
 </resources>

@@ -2,8 +2,8 @@
 <layout>
     <data>
         <variable
-            name="viewModel"
-            type="com.baikaleg.v3.autoinfo.ui.main.MainActivityModel"/>
+            name="viewmodel"
+            type="com.baikaleg.v3.autoinfo.ui.main.MainActivityModel" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -29,7 +29,8 @@
 
         <include
             android:id="@+id/container"
-            layout="@layout/content_main" />
+            layout="@layout/content_main"
+            app:viewmodel="@{viewmodel}"/>
 
     </android.support.design.widget.CoordinatorLayout>
 </layout>

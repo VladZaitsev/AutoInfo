@@ -1,7 +1,9 @@
 package com.baikaleg.v3.autoinfo.ui.main
 
+import android.app.ActivityManager
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModelProviders
 import android.content.BroadcastReceiver
@@ -10,13 +12,16 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
-import com.baikaleg.v3.autoinfo.data.QueryPreferences
-import android.app.ActivityManager
+import android.view.View
 import com.baikaleg.v3.autoinfo.service.StationUpdateService
 
 
 class MainActivityModel(application: Application) : AndroidViewModel(application) {
-    private val state: MutableLiveData<Boolean>? = null
+    private val state = MutableLiveData<Boolean>()
+
+    fun getState(): LiveData<Boolean> {
+        return state
+    }
 
     private val bcReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -26,6 +31,11 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
 
     init {
+        if (isServiceRunning()) {
+            state.postValue(true)
+        } else {
+            state.postValue(false)
+        }
         LocalBroadcastManager.getInstance(getApplication())
                 .registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
     }
@@ -44,6 +54,14 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
         fun create(activity: AppCompatActivity): MainActivityModel {
             return ViewModelProviders.of(activity).get(MainActivityModel::class.java)
+        }
+    }
+
+    fun onMainBtnClick(view: View) {
+        if (state.value == true) {
+            state.postValue(false)
+        } else {
+            state.postValue(true)
         }
     }
 

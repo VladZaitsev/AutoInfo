@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
         val viewModel: MainActivityModel = MainActivityModel.create(this)
         val binding: ActivityMainBinding =
                 DataBindingUtil.setContentView(this,R.layout.activity_main)
-        binding.viewModel = viewModel
+        binding.viewmodel = viewModel
         binding.setLifecycleOwner(this)
     }
 }

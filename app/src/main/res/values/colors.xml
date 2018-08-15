@@ -6,4 +6,5 @@
 
     <color name="colorStartMain">#e7c2f4a9</color>
     <color name="colorStopMain">#e7e78b8b</color>
+    <color name="colorStrokeMain">#8f9096</color>
 </resources>
