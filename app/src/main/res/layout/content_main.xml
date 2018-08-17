@@ -17,12 +17,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewmodel.route}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toTopOf="@id/stop_go_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageButton
+            android:id="@+id/stop_go_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@{viewmodel.state ? @drawable/btn_start : @drawable/btn_stop, default=@drawable/btn_start}"
             android:contentDescription="@string/cd_start_stop_btn"
-            android:elevation="3dp"
+            android:elevation="10dp"
             android:onClick="@{viewmodel::onMainBtnClick}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

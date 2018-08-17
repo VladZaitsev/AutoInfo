@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 
 private const val PREF_ROUTE_QUERY = "route"
 private const val PREF_CITY_QUERY = "city"
+private const val PREF_ROUTES_LIST_QUERY = "routes_list"
 
 class QueryPreferences(private val context: Context) {
 

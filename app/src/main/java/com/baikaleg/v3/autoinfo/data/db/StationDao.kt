@@ -11,13 +11,13 @@ import io.reactivex.Flowable
 interface StationDao {
 
     @Query("SELECT DISTINCT city FROM stationData")
-    fun getAllCities(city: String): Flowable<List<String>>
+    fun getAllCities(): Flowable<List<String>>
 
     @Query("SELECT route FROM stationData WHERE city = :city")
     fun getAllRoutesInCity(city: String): Flowable<List<String>>
 
     @Query("SELECT * FROM stationData WHERE route = :route")
-    fun getAllStationsInRoute(route: String): Flowable<List<Station>>
+    fun getAllStationsInRoute(route: String?): Flowable<List<Station>>
 
     @Insert(onConflict = REPLACE)
     fun insert(station: Station)

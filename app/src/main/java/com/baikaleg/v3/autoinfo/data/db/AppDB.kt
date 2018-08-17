@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = arrayOf(Station::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(Station::class), version = 1)
 abstract class AppDB : RoomDatabase() {
 
     abstract fun stationDao(): StationDao
@@ -18,7 +18,9 @@ abstract class AppDB : RoomDatabase() {
             if (INSTANCE == null) {
                 synchronized(AppDB::class) {
                     INSTANCE = Room.databaseBuilder(context.applicationContext,
-                            AppDB::class.java, DATABASE_NAME)
+                            AppDB::class.java,
+                            DATABASE_NAME)
+                            .allowMainThreadQueries()
                             .build()
                 }
             }

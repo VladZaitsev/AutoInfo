@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">AutoInfo</string>
     <string name="title_activity_main">MainActivity</string>
+
     <string name="cd_start_stop_btn">Press this button for stop or start trip</string>
+
+    <string name="msg_use_location_not_allowed">You did not allow use location service</string>
 </resources>
