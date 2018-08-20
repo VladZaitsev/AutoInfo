@@ -38,9 +38,15 @@ class MainActivity : AppCompatActivity(),
                 DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         viewModel = MainActivityModel.create(this)
-        binding.viewmodel = viewModel
+        viewModel.setNavigator(this)
 
+        binding.viewmodel = viewModel
         binding.setLifecycleOwner(this)
+    }
+
+    override fun onDestroy() {
+        viewModel.cancel()
+        super.onDestroy()
     }
 
     override fun onLocationPermissionRequest() {

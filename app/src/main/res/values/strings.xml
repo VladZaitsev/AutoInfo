@@ -5,4 +5,6 @@
     <string name="cd_start_stop_btn">Press this button for stop or start trip</string>
 
     <string name="msg_use_location_not_allowed">You did not allow use location service</string>
+    <string name="notif_content">AutoInfo is active</string>
+    <string name="msg_wrong_direction">You go in the wrong direction</string>
 </resources>

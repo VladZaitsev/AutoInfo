@@ -20,7 +20,6 @@ import android.view.View
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.service.StationSearchService
 
-
 class MainActivityModel(application: Application) : AndroidViewModel(application) {
 
     private lateinit var navigator: OnPermissionRequest
@@ -38,7 +37,10 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
     private val bcReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            val status = intent?.getIntExtra(PARAM_STATUS, 0)
+            when (status) {
+                STATUS_GPS -> route.postValue("gps ${intent.getDoubleExtra(PARAM_GPS,0.0)}")
+            }
         }
     }
 
@@ -52,15 +54,18 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
             state.postValue(true)
         }
 
-        LocalBroadcastManager.getInstance(getApplication())
-                .registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
+        getApplication<Application>().registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
     }
 
     companion object {
         @JvmField
         val ROUTE_EXTRA = "route_extra"
         @JvmField
+        val STATION_ANNOUNCEMENT_TYPE_EXTRA = "station_announcement_type_extra"
+
+        @JvmField
         val BROADCAST_ACTION = "com.baikaleg.v3.autoinfo.br"
+
         @JvmField
         val STATUS_NEXT = 100
         @JvmField
@@ -69,6 +74,17 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         val STATUS_GPS = 300
         @JvmField
         val STATUS_DIRECTION = 400
+
+        @JvmField
+        val PARAM_NEXT = "resultNext"
+        @JvmField
+        val PARAM_CURRENT = "resultCurrent"
+        @JvmField
+        val PARAM_GPS = "resultGPS"
+        @JvmField
+        val PARAM_DIRECTION = "resultDirection"
+        @JvmField
+        val PARAM_STATUS = "status"
 
         fun create(activity: AppCompatActivity): MainActivityModel {
             return ViewModelProviders.of(activity).get(MainActivityModel::class.java)
@@ -88,14 +104,12 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
     }
 
     fun cancel() {
-        LocalBroadcastManager.getInstance(getApplication()).unregisterReceiver(bcReceiver)
+        getApplication<Application>().unregisterReceiver(bcReceiver)
     }
 
     fun setNavigator(nav: OnPermissionRequest) {
         navigator = nav
     }
-
-
 
     fun startService() {
         val intent = Intent(getApplication(), StationSearchService::class.java)
@@ -129,5 +143,9 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
             }
         }
         return false
+    }
+
+    private fun checkGps(){
+        //TODO Here realize gps check
     }
 }
