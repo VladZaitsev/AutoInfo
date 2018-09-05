@@ -1,7 +1,9 @@
 package com.baikaleg.v3.autoinfo.ui.main
 
-interface OnPermissionRequest {
+interface StationServiceNavigator {
 
     fun onLocationPermissionRequest()
+
+    fun onMessageReceived(msg:String)
 
 }

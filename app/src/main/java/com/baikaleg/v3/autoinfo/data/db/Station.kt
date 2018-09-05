@@ -6,11 +6,14 @@ import android.arch.persistence.room.PrimaryKey
 
 
 @Entity(tableName = "stationData")
-data class Station(@PrimaryKey(autoGenerate = true) var id: Long?,
-                   @ColumnInfo(name = "city") var city: String,
+data class Station(@ColumnInfo(name = "city") var city: String,
                    @ColumnInfo(name = "route") var route: String,
+                   @ColumnInfo(name = "short_description") var short_description: String,
                    @ColumnInfo(name = "description") var description: String,
                    @ColumnInfo(name = "latitude") var latitude: Double,
                    @ColumnInfo(name = "longitude") var longitude: Double,
-                   @ColumnInfo(name = "type") var type: Int //0 - to; 1 - from; 2 - circle
-)
+                   @ColumnInfo(name = "type") var type: Int) { //0 - to; 1 - from; 2 - circle
+    @ColumnInfo(name = "id")
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
+}

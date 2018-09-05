@@ -15,7 +15,8 @@ private const val REQUEST_ACCESS_FINE_LOCATION = 201
 
 class MainActivity : AppCompatActivity(),
         ActivityCompat.OnRequestPermissionsResultCallback,
-        OnPermissionRequest {
+        StationServiceNavigator {
+
 
     private lateinit var viewModel: MainActivityModel
 
@@ -52,5 +53,9 @@ class MainActivity : AppCompatActivity(),
     override fun onLocationPermissionRequest() {
         ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_ACCESS_FINE_LOCATION)
+    }
+
+    override fun onMessageReceived(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 }

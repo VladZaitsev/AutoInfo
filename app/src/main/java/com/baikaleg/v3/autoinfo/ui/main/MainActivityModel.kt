@@ -14,18 +14,32 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.service.StationSearchService
 
+const val ROUTE_EXTRA = "route_extra"
+const val STATION_ANNOUNCEMENT_TYPE_EXTRA = "station_announcement_type_extra"
+const val BROADCAST_ACTION = "com.baikaleg.v3.autoinfo.br"
+const val PARAM_STATUS = "status"
+const val STATUS_STATION = 101
+const val STATUS_DIRECTION = 102
+const val STATUS_GPS = 103
+const val STATUS_MSG = 104
+
+const val PARAM_STATION = "result_station"
+const val PARAM_DIRECTION = "result_direction"
+const val PARAM_GPS = "result_gps"
+const val PARAM_MSG = "result_msg"
+
 class MainActivityModel(application: Application) : AndroidViewModel(application) {
 
-    private lateinit var navigator: OnPermissionRequest
+    private lateinit var navigator: StationServiceNavigator
 
     private val state = MutableLiveData<Boolean>()
     private val route = MutableLiveData<String>()
+    private val station = MutableLiveData<String>()
 
     fun getState(): LiveData<Boolean> {
         return state
@@ -39,7 +53,9 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         override fun onReceive(context: Context?, intent: Intent?) {
             val status = intent?.getIntExtra(PARAM_STATUS, 0)
             when (status) {
-                STATUS_GPS -> route.postValue("gps ${intent.getDoubleExtra(PARAM_GPS,0.0)}")
+                STATUS_STATION -> station.postValue(intent.getStringExtra(PARAM_STATION))
+                STATUS_GPS -> route.postValue("gps ${intent.getDoubleExtra(PARAM_GPS, 0.0)}")
+                STATUS_MSG -> navigator.onMessageReceived(intent.getStringExtra(PARAM_MSG))
             }
         }
     }
@@ -58,34 +74,6 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
     }
 
     companion object {
-        @JvmField
-        val ROUTE_EXTRA = "route_extra"
-        @JvmField
-        val STATION_ANNOUNCEMENT_TYPE_EXTRA = "station_announcement_type_extra"
-
-        @JvmField
-        val BROADCAST_ACTION = "com.baikaleg.v3.autoinfo.br"
-
-        @JvmField
-        val STATUS_NEXT = 100
-        @JvmField
-        val STATUS_CURRENT = 200
-        @JvmField
-        val STATUS_GPS = 300
-        @JvmField
-        val STATUS_DIRECTION = 400
-
-        @JvmField
-        val PARAM_NEXT = "resultNext"
-        @JvmField
-        val PARAM_CURRENT = "resultCurrent"
-        @JvmField
-        val PARAM_GPS = "resultGPS"
-        @JvmField
-        val PARAM_DIRECTION = "resultDirection"
-        @JvmField
-        val PARAM_STATUS = "status"
-
         fun create(activity: AppCompatActivity): MainActivityModel {
             return ViewModelProviders.of(activity).get(MainActivityModel::class.java)
         }
@@ -107,7 +95,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         getApplication<Application>().unregisterReceiver(bcReceiver)
     }
 
-    fun setNavigator(nav: OnPermissionRequest) {
+    fun setNavigator(nav: StationServiceNavigator) {
         navigator = nav
     }
 
@@ -145,7 +133,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         return false
     }
 
-    private fun checkGps(){
+    private fun checkGps() {
         //TODO Here realize gps check
     }
 }
