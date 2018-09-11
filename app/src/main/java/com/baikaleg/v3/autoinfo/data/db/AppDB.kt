@@ -4,6 +4,7 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
+import com.baikaleg.v3.autoinfo.data.model.Station
 
 @Database(entities = arrayOf(Station::class), version = 1)
 abstract class AppDB : RoomDatabase() {

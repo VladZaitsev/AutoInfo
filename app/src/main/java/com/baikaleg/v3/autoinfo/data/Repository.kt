@@ -2,7 +2,7 @@ package com.baikaleg.v3.autoinfo.data
 
 import android.content.Context
 import com.baikaleg.v3.autoinfo.data.db.AppDB
-import com.baikaleg.v3.autoinfo.data.db.Station
+import com.baikaleg.v3.autoinfo.data.model.Station
 import io.reactivex.disposables.CompositeDisposable
 
 class Repository private constructor(context: Context) {

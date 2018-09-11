@@ -5,6 +5,7 @@ import android.arch.persistence.room.Delete
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import android.arch.persistence.room.Query
+import com.baikaleg.v3.autoinfo.data.model.Station
 import io.reactivex.Flowable
 
 @Dao

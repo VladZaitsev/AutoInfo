@@ -6,15 +6,18 @@ import android.os.IBinder
 import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
-import com.baikaleg.v3.autoinfo.data.db.Station
-import org.hamcrest.Matchers.*
+import com.baikaleg.v3.autoinfo.data.model.GeoData
+import com.baikaleg.v3.autoinfo.data.model.Station
+import com.baikaleg.v3.autoinfo.ui.main.STATION_ANNOUNCEMENT_TYPE_EXTRA
+import org.hamcrest.Matchers.empty
+import org.hamcrest.Matchers.equalTo
 import org.json.JSONArray
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-
 
 fun loadStationsList(context: Context): List<Station> {
     val stations: MutableList<Station> = mutableListOf()
@@ -33,6 +36,7 @@ fun loadStationsList(context: Context): List<Station> {
                 jsonObject.getDouble("longitude"),
                 jsonObject.getInt("type")
         )
+        station.id= jsonObject.getLong("id")
         stations.add(station)
     }
     return stations
@@ -51,34 +55,44 @@ class StationSearchServiceTest {
     @Rule
     @JvmField
     val mServiceRule = ServiceTestRule()
-    private lateinit var service: StationSearchService
+    private lateinit var stations: List<Station>
+    private val geoData: MutableList<GeoData> = arrayListOf()
+    private val geoReverseData: MutableList<GeoData> = arrayListOf()
 
     @Before
     fun setup() {
-        val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
-        val binder: IBinder = mServiceRule.bindService(intent)
-        service = (binder as StationSearchService.StationSearchBinder).getService()
+        stations = loadStationsList(InstrumentationRegistry.getTargetContext())
+
+        val geoArray = loadLocationArray("direct.txt", InstrumentationRegistry.getTargetContext())
+        (0 until (geoArray.length()))
+                .map { geoArray.getJSONObject(it) }
+                .forEach { geoData.add(GeoData(it.getDouble("latitude"), it.getDouble("longitude"))) }
+
+        geoReverseData.addAll(geoData)
+        geoReverseData.addAll(geoData.reversed())
     }
 
     @Test
-    fun testCurrentStationsInOneDirect() {
-        val stations = loadStationsList(InstrumentationRegistry.getTargetContext())
-        val array = loadLocationArray("direct.txt", InstrumentationRegistry.getTargetContext())
+    fun testCurrentStationsAnnouncementInOneDirection() {
+        val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
+        val binder: IBinder = mServiceRule.bindService(intent)
+        val service = (binder as StationSearchService.StationSearchBinder).getService()
 
-        val listToTest: MutableList<Station> = mutableListOf()
+        val currentStationsListToTest: MutableList<Station> = mutableListOf()
+        val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
-        for (i in 0 until (array.length())) {
-            val jsonObject = array.getJSONObject(i)
+        for (data in geoData) {
             service.announceNearestStationsState(
-                    jsonObject.getDouble("latitude"),
-                    jsonObject.getDouble("longitude"),
+                    data.latitude,
+                    data.longitude,
                     stations,
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
-                            listToTest.add(station)
+                            currentStationsListToTest.add(station)
                         }
 
-                        override fun announceNextStation(station: Station) {
+                        override fun announceNextStation(station: Station, distance: Double) {
+                            nextStationsListToTest.add(station)
                         }
 
                         override fun isDirectionChanged(b: Boolean) {
@@ -86,7 +100,121 @@ class StationSearchServiceTest {
                     })
         }
 
-        assertThat(listToTest, `not`(empty()))
-        assertThat(listToTest, equalTo(stations))
+        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.type == 0 }))
+        assertThat(nextStationsListToTest, empty())
+    }
+
+    @Test
+    fun testWithImmediateNextStationsAnnouncementInOneDirection() {
+        val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
+        intent.putExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 1)
+        val binder: IBinder = mServiceRule.bindService(intent)
+        val service = (binder as StationSearchService.StationSearchBinder).getService()
+
+        val nextStationsListToTest: MutableList<Station> = mutableListOf()
+
+        for (data in geoData) {
+            service.announceNearestStationsState(
+                    data.latitude,
+                    data.longitude,
+                    stations,
+                    object : StationSearchService.OnStationStateChanged {
+                        override fun announceCurrentStation(station: Station) {
+
+                        }
+
+                        override fun announceNextStation(station: Station, distance: Double) {
+                            assertEquals("distance failed", 0.0, distance, 0.01)
+                            nextStationsListToTest.add(station)
+                        }
+
+                        override fun isDirectionChanged(b: Boolean) {
+                        }
+                    })
+        }
+
+        val tempNextStationsList: MutableList<Station> = stations
+                .filter { station -> station.id != 0L }
+                .filter { station -> station.type == 0 }
+                .toMutableList()
+
+        assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
+    }
+
+    @Test
+    fun testWithDelayNextStationsAnnouncementInOneDirection() {
+        val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
+        intent.putExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 2)
+        val binder: IBinder = mServiceRule.bindService(intent)
+        val service = (binder as StationSearchService.StationSearchBinder).getService()
+
+        val nextStationsListToTest: MutableList<Station> = mutableListOf()
+
+        for (data in geoData) {
+            service.announceNearestStationsState(
+                    data.latitude,
+                    data.longitude,
+                    stations,
+                    object : StationSearchService.OnStationStateChanged {
+                        override fun announceCurrentStation(station: Station) {
+
+                        }
+
+                        override fun announceNextStation(station: Station, distance: Double) {
+                            assertEquals("distance failed", 0.03, distance, 0.01)
+                            nextStationsListToTest.add(station)
+                        }
+
+                        override fun isDirectionChanged(b: Boolean) {
+                        }
+                    })
+        }
+
+        val tempNextStationsList: MutableList<Station> = stations
+                .filter { station -> station.id != 0L }
+                .filter { station -> station.type == 0 }
+                .toMutableList()
+
+        assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
+    }
+
+    @Test
+    fun testWithChangedDirection() {
+        val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
+        intent.putExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 1)
+        val binder: IBinder = mServiceRule.bindService(intent)
+        val service = (binder as StationSearchService.StationSearchBinder).getService()
+
+        val currentStationsListToTest: MutableList<Station> = mutableListOf()
+        val nextStationsListToTest: MutableList<Station> = mutableListOf()
+
+        for (data in geoReverseData) {
+            service.announceNearestStationsState(
+                    data.latitude,
+                    data.longitude,
+                    stations,
+                    object : StationSearchService.OnStationStateChanged {
+                        override fun announceCurrentStation(station: Station) {
+                            currentStationsListToTest.add(station)
+                        }
+
+                        override fun announceNextStation(station: Station, distance: Double) {
+                            nextStationsListToTest.add(station)
+                        }
+
+                        override fun isDirectionChanged(b: Boolean) {
+
+                        }
+                    })
+        }
+        val tempCurrentStationsList: MutableList<Station> = stations.filter { station -> station.id != 7L }.toMutableList()
+        val tempNextStationsList: MutableList<Station> = stations
+                .filter { station -> station.id != 0L }
+                .filter { station -> station.id != 7L }
+                .filter { station -> station.id != 8L }
+                .toMutableList()
+
+        assertThat(currentStationsListToTest, equalTo(tempCurrentStationsList))
+        assertThat(nextStationsListToTest,  equalTo(tempNextStationsList))
     }
 }

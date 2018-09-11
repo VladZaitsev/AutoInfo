@@ -1,5 +1,6 @@
 ﻿ [
         {
+            "id": "0",
             "city": "test",
             "route": "test",
             "short_description": "ТД За рулем",
@@ -9,6 +10,7 @@
             "type": "0"
         },
         {
+            "id": "1",
             "city": "test",
             "route": "test",
             "short_description": "Акбэс",
@@ -18,6 +20,7 @@
             "type": "0"
         },
         {
+            "id": "2",
             "city": "test",
             "route": "test",
             "short_description": "41-ый квартал",
@@ -27,6 +30,7 @@
             "type": "0"
         },
         {
+            "id": "3",
             "city": "test",
             "route": "test",
             "short_description": "Призывной пункт",
@@ -36,6 +40,7 @@
             "type": "0"
         },
         {
+            "id": "4",
             "city": "test",
             "route": "test",
             "short_description": "43-ий квартал",
@@ -45,6 +50,7 @@
             "type": "0"
         },
         {
+            "id": "5",
             "city": "test",
             "route": "test",
             "short_description": "Женская поликлиника",
@@ -54,6 +60,7 @@
             "type": "0"
         },
         {
+            "id": "6",
             "city": "test",
             "route": "test",
             "short_description": "44-ый квартал",
@@ -61,5 +68,75 @@
             "latitude": "51.806059706379436",
             "longitude": "107.6545192161575",
             "type": "0"
+        },
+        {
+            "id": "7",
+            "city": "test",
+            "route": "test",
+            "short_description": "44-ый квартал",
+            "description": "test",
+            "latitude": "51.806059706379436",
+            "longitude": "107.6545192161575",
+            "type": "1"
+        },
+        {
+            "id": "8",
+            "city": "test",
+            "route": "test",
+            "short_description": "Женская поликлиника",
+            "description": "test",
+            "latitude": "51.80923949186342",
+            "longitude": "107.6555592007935",
+            "type": "1"
+        },
+        {
+             "id": "9",
+             "city": "test",
+             "route": "test",
+             "short_description": "43-ий квартал",
+             "description": "test",
+             "latitude": "51.81123220133137",
+             "longitude": "107.66141249332577",
+             "type": "1"
+        },
+        {
+            "id": "10",
+            "city": "test",
+            "route": "test",
+            "short_description": "Призывной пункт",
+            "description": "test",
+            "latitude": "51.812157516159104",
+            "longitude": "107.66653551254421",
+            "type": "1"
+        },
+        {
+            "id": "11",
+            "city": "test",
+            "route": "test",
+            "short_description": "41-ый квартал",
+            "description": "test",
+            "latitude": "51.81275779984769",
+            "longitude": "107.67040849663317",
+             "type": "1"
+        },
+        {
+            "id": "12",
+            "city": "test",
+            "route": "test",
+            "short_description": "Акбэс",
+            "description": "test",
+            "latitude": "51.813620071817326",
+            "longitude": "107.67475648317486",
+            "type": "1"
+        },
+        {
+            "id": "13",
+            "city": "test",
+            "route": "test",
+            "short_description": "ТД За рулем",
+            "description": "test",
+            "latitude": "51.815255622722326",
+            "longitude": "107.67783251591027",
+            "type": "1"
         }
     ]
