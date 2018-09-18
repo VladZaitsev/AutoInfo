@@ -8,6 +8,7 @@ import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.baikaleg.v3.autoinfo.data.model.GeoData
 import com.baikaleg.v3.autoinfo.data.model.Station
+import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
 import com.baikaleg.v3.autoinfo.ui.main.STATION_ANNOUNCEMENT_TYPE_EXTRA
 import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo

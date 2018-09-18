@@ -1,4 +1,4 @@
-package com.baikaleg.v3.autoinfo.service
+package com.baikaleg.v3.autoinfo.service.stationsearch
 
 import android.app.Notification
 import android.app.PendingIntent
@@ -12,9 +12,8 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.Repository
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.ui.main.*
-import com.baikaleg.v3.autoinfo.utils.StationAudioSystem
+import com.baikaleg.v3.autoinfo.audio.AudioController
 import com.google.android.gms.location.*
-import org.json.JSONObject
 
 private const val NOTIFICATION_ID = 101
 private const val INTERVAL: Long = 1000
@@ -40,7 +39,7 @@ class StationSearchService : Service() {
     private lateinit var fullStationsList: List<Station>
 
     private lateinit var repository: Repository
-    private lateinit var audioSystem: StationAudioSystem
+    private lateinit var audioSystem: AudioController
 
     private lateinit var locationCallback: LocationCallback
     private lateinit var locationRequest: LocationRequest
@@ -55,7 +54,7 @@ class StationSearchService : Service() {
     override fun onCreate() {
         super.onCreate()
         repository = Repository.getInstance(this.applicationContext)
-        audioSystem = StationAudioSystem(this.applicationContext)
+        audioSystem = AudioController(this.applicationContext)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         createLocationCallback()
@@ -88,6 +87,7 @@ class StationSearchService : Service() {
     }
 
     override fun onDestroy() {
+
         stopLocationUpdates()
         super.onDestroy()
     }

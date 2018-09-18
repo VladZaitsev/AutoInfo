@@ -17,7 +17,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
-import com.baikaleg.v3.autoinfo.service.StationSearchService
+import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
+import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
+
 
 const val ROUTE_EXTRA = "route_extra"
 const val STATION_ANNOUNCEMENT_TYPE_EXTRA = "station_announcement_type_extra"
@@ -35,7 +37,7 @@ const val PARAM_MSG = "result_msg"
 
 class MainActivityModel(application: Application) : AndroidViewModel(application) {
 
-    private lateinit var navigator: StationServiceNavigator
+    private lateinit var navigator: StationSearchNavigator
 
     private val state = MutableLiveData<Boolean>()
     private val route = MutableLiveData<String>()
@@ -95,7 +97,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         getApplication<Application>().unregisterReceiver(bcReceiver)
     }
 
-    fun setNavigator(nav: StationServiceNavigator) {
+    fun setNavigator(nav: StationSearchNavigator) {
         navigator = nav
     }
 
@@ -126,7 +128,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
         for (s in services) {
             //TODO Change service name
-            if (s.service.className.equals("com.baikaleg.v3.autoinfo.service.StationSearchService")) {
+            if (s.service.className.equals("com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService")) {
                 return true
             }
         }

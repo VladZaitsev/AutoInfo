@@ -9,13 +9,14 @@ import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
+import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
 
 class MainActivity : AppCompatActivity(),
         ActivityCompat.OnRequestPermissionsResultCallback,
-        StationServiceNavigator {
+        StationSearchNavigator {
 
 
     private lateinit var viewModel: MainActivityModel
