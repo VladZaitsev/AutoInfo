@@ -6,16 +6,18 @@ import android.os.IBinder
 import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
+import com.baikaleg.v3.autoinfo.audio.AudioController
+import com.baikaleg.v3.autoinfo.data.*
 import com.baikaleg.v3.autoinfo.data.model.GeoData
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
-import com.baikaleg.v3.autoinfo.ui.main.STATION_ANNOUNCEMENT_TYPE_EXTRA
 import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo
 import org.json.JSONArray
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,9 +37,10 @@ fun loadStationsList(context: Context): List<Station> {
                 jsonObject.getString("description"),
                 jsonObject.getDouble("latitude"),
                 jsonObject.getDouble("longitude"),
+                jsonObject.getString("path"),
                 jsonObject.getInt("type")
         )
-        station.id= jsonObject.getLong("id")
+        station.id = jsonObject.getLong("id")
         stations.add(station)
     }
     return stations
@@ -59,6 +62,7 @@ class StationSearchServiceTest {
     private lateinit var stations: List<Station>
     private val geoData: MutableList<GeoData> = arrayListOf()
     private val geoReverseData: MutableList<GeoData> = arrayListOf()
+    private lateinit var audioSystem: AudioController
 
     @Before
     fun setup() {
@@ -71,11 +75,18 @@ class StationSearchServiceTest {
 
         geoReverseData.addAll(geoData)
         geoReverseData.addAll(geoData.reversed())
+
+        audioSystem = AudioController(InstrumentationRegistry.getTargetContext())
     }
 
+    @Ignore
     @Test
     fun testCurrentStationsAnnouncementInOneDirection() {
         val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
+        val pref = QueryPreferences(InstrumentationRegistry.getTargetContext())
+        pref.setAnnounceStationType(ANNOUNCE_STATION_TYPE_EMPTY)
+        pref.setAnnounceAudioType(ANNOUNCE_AUDIO_TYPE_TTS)
+
         val binder: IBinder = mServiceRule.bindService(intent)
         val service = (binder as StationSearchService.StationSearchBinder).getService()
 
@@ -83,16 +94,18 @@ class StationSearchServiceTest {
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoData) {
-            service.announceNearestStationsState(
+            Thread.sleep(100)
+            service.announceNearestStation(
                     data.latitude,
                     data.longitude,
                     stations,
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
                             currentStationsListToTest.add(station)
+                            audioSystem.announceStation(station, 1)
                         }
 
-                        override fun announceNextStation(station: Station, distance: Double) {
+                        override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
                         }
 
@@ -101,32 +114,35 @@ class StationSearchServiceTest {
                     })
         }
 
-        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.type == 0 }))
+        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.route_type == 0 }))
         assertThat(nextStationsListToTest, empty())
     }
 
     @Test
     fun testWithImmediateNextStationsAnnouncementInOneDirection() {
         val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
-        intent.putExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 1)
+        val pref = QueryPreferences(InstrumentationRegistry.getTargetContext())
+        pref.setAnnounceStationType(ANNOUNCE_STATION_TYPE_NEXT)
+
         val binder: IBinder = mServiceRule.bindService(intent)
         val service = (binder as StationSearchService.StationSearchBinder).getService()
 
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoData) {
-            service.announceNearestStationsState(
+            Thread.sleep(500)
+            service.announceNearestStation(
                     data.latitude,
                     data.longitude,
                     stations,
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
-
+                            audioSystem.announceStation(station, 1)
                         }
 
-                        override fun announceNextStation(station: Station, distance: Double) {
-                            assertEquals("distance failed", 0.0, distance, 0.01)
+                        override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
+                            audioSystem.announceStation(station, 2)
                         }
 
                         override fun isDirectionChanged(b: Boolean) {
@@ -134,25 +150,27 @@ class StationSearchServiceTest {
                     })
         }
 
-        val tempNextStationsList: MutableList<Station> = stations
+        val tempNextStationsList: MutableList<Station> = stations.asSequence()
                 .filter { station -> station.id != 0L }
-                .filter { station -> station.type == 0 }
+                .filter { station -> station.route_type == 0 }
                 .toMutableList()
 
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
     }
-
+/*
     @Test
     fun testWithDelayNextStationsAnnouncementInOneDirection() {
         val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
-        intent.putExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 2)
+        val pref = QueryPreferences(InstrumentationRegistry.getTargetContext())
+        pref.setAnnounceStationType(ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY)
+
         val binder: IBinder = mServiceRule.bindService(intent)
         val service = (binder as StationSearchService.StationSearchBinder).getService()
 
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoData) {
-            service.announceNearestStationsState(
+            service.announceNearestStation(
                     data.latitude,
                     data.longitude,
                     stations,
@@ -161,8 +179,7 @@ class StationSearchServiceTest {
 
                         }
 
-                        override fun announceNextStation(station: Station, distance: Double) {
-                            assertEquals("distance failed", 0.03, distance, 0.01)
+                        override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
                         }
 
@@ -173,7 +190,7 @@ class StationSearchServiceTest {
 
         val tempNextStationsList: MutableList<Station> = stations
                 .filter { station -> station.id != 0L }
-                .filter { station -> station.type == 0 }
+                .filter { station -> station.route_type == 0 }
                 .toMutableList()
 
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
@@ -182,7 +199,9 @@ class StationSearchServiceTest {
     @Test
     fun testWithChangedDirection() {
         val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
-        intent.putExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 1)
+        val pref = QueryPreferences(InstrumentationRegistry.getTargetContext())
+        pref.setAnnounceStationType(ANNOUNCE_STATION_TYPE_NEXT)
+
         val binder: IBinder = mServiceRule.bindService(intent)
         val service = (binder as StationSearchService.StationSearchBinder).getService()
 
@@ -190,7 +209,7 @@ class StationSearchServiceTest {
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoReverseData) {
-            service.announceNearestStationsState(
+            service.announceNearestStation(
                     data.latitude,
                     data.longitude,
                     stations,
@@ -199,7 +218,7 @@ class StationSearchServiceTest {
                             currentStationsListToTest.add(station)
                         }
 
-                        override fun announceNextStation(station: Station, distance: Double) {
+                        override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
                         }
 
@@ -216,6 +235,8 @@ class StationSearchServiceTest {
                 .toMutableList()
 
         assertThat(currentStationsListToTest, equalTo(tempCurrentStationsList))
-        assertThat(nextStationsListToTest,  equalTo(tempNextStationsList))
+        assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
     }
+    */
+
 }

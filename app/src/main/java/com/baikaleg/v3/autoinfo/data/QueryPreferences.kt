@@ -6,7 +6,16 @@ import android.preference.PreferenceManager
 private const val PREF_ROUTE_QUERY = "route"
 private const val PREF_CITY_QUERY = "city"
 private const val PREF_ROUTES_LIST_QUERY = "routes_list"
-private const val PREF_AUDIO_MODE_QUERY = "audio_mode"
+private const val PREF_ANNOUNCE_AUDIO_TYPE_QUERY = "announce_audio_type"
+private const val PREF_ANNOUNCE_STATION_TYPE_QUERY = "announce_station_type"
+
+const val ANNOUNCE_AUDIO_TYPE_TTS = 0
+const val ANNOUNCE_AUDIO_TYPE_PLAYER = 1
+
+const val ANNOUNCE_STATION_TYPE_EMPTY = 0
+const val ANNOUNCE_STATION_TYPE_CURRENT = 1
+const val ANNOUNCE_STATION_TYPE_NEXT = 2
+const val ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY = 3
 
 class QueryPreferences(private val context: Context) {
 
@@ -38,19 +47,31 @@ class QueryPreferences(private val context: Context) {
                 .apply()
     }
 
-    fun getAudioMode(): Int {
+    fun getAnnounceStationType(): Int {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getInt(PREF_AUDIO_MODE_QUERY, 0)
+                .getInt(PREF_ANNOUNCE_STATION_TYPE_QUERY, 0)
     }
 
-    fun setAudioMode(mode: Int) {
+    fun setAnnounceStationType(type: Int) {
         PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .edit()
-                .putInt(PREF_AUDIO_MODE_QUERY, mode)
+                .putInt(PREF_ANNOUNCE_STATION_TYPE_QUERY, type)
                 .apply()
     }
 
+    fun getAnnounceAudioType(): Int {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getInt(PREF_ANNOUNCE_AUDIO_TYPE_QUERY, 0)
+    }
 
+    fun setAnnounceAudioType(mode: Int) {
+        PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .edit()
+                .putInt(PREF_ANNOUNCE_AUDIO_TYPE_QUERY, mode)
+                .apply()
+    }
 }

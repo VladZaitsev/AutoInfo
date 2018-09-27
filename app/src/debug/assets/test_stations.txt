@@ -7,6 +7,7 @@
             "description": "test",
             "latitude": "51.815255622722326",
             "longitude": "107.67783251591027",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -17,6 +18,7 @@
             "description": "test",
             "latitude": "51.813620071817326",
             "longitude": "107.67475648317486",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -27,6 +29,7 @@
             "description": "test",
             "latitude": "51.81272297697923",
             "longitude": "107.66939998604357",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -37,6 +40,7 @@
             "description": "test",
             "latitude": "51.812157516159104",
             "longitude": "107.66653551254421",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -47,6 +51,7 @@
             "description": "test",
             "latitude": "51.81123220133137",
             "longitude": "107.66141249332577",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -57,6 +62,7 @@
             "description": "test",
             "latitude": "51.80884148355177",
             "longitude": "107.65525879338384",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -67,6 +73,7 @@
             "description": "test",
             "latitude": "51.806059706379436",
             "longitude": "107.6545192161575",
+            "path": "test_voice.ogg",
             "type": "0"
         },
         {
@@ -77,6 +84,7 @@
             "description": "test",
             "latitude": "51.806059706379436",
             "longitude": "107.6545192161575",
+            "path": "test_voice.ogg",
             "type": "1"
         },
         {
@@ -87,6 +95,7 @@
             "description": "test",
             "latitude": "51.80923949186342",
             "longitude": "107.6555592007935",
+            "path": "test_voice.ogg",
             "type": "1"
         },
         {
@@ -97,6 +106,7 @@
              "description": "test",
              "latitude": "51.81123220133137",
              "longitude": "107.66141249332577",
+             "path": "test_voice.ogg",
              "type": "1"
         },
         {
@@ -107,6 +117,7 @@
             "description": "test",
             "latitude": "51.812157516159104",
             "longitude": "107.66653551254421",
+            "path": "test_voice.ogg",
             "type": "1"
         },
         {
@@ -117,7 +128,8 @@
             "description": "test",
             "latitude": "51.81275779984769",
             "longitude": "107.67040849663317",
-             "type": "1"
+            "path": "test_voice.ogg",
+            "type": "1"
         },
         {
             "id": "12",
@@ -127,6 +139,7 @@
             "description": "test",
             "latitude": "51.813620071817326",
             "longitude": "107.67475648317486",
+            "path": "test_voice.ogg",
             "type": "1"
         },
         {
@@ -137,6 +150,7 @@
             "description": "test",
             "latitude": "51.815255622722326",
             "longitude": "107.67783251591027",
+            "path": "test_voice.ogg",
             "type": "1"
         }
     ]

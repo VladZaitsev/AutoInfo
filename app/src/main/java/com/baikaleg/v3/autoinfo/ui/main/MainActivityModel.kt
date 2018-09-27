@@ -22,7 +22,6 @@ import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
 
 
 const val ROUTE_EXTRA = "route_extra"
-const val STATION_ANNOUNCEMENT_TYPE_EXTRA = "station_announcement_type_extra"
 const val BROADCAST_ACTION = "com.baikaleg.v3.autoinfo.br"
 const val PARAM_STATUS = "status"
 const val STATUS_STATION = 101
@@ -136,6 +135,6 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
     }
 
     private fun checkGps() {
-        //TODO Here realize gps check
+//TODO Here realize gps check
     }
 }

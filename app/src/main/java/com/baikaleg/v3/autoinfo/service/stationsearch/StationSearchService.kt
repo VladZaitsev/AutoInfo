@@ -9,10 +9,10 @@ import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.NotificationManagerCompat
 import com.baikaleg.v3.autoinfo.R
-import com.baikaleg.v3.autoinfo.data.Repository
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.ui.main.*
 import com.baikaleg.v3.autoinfo.audio.AudioController
+import com.baikaleg.v3.autoinfo.data.*
 import com.google.android.gms.location.*
 
 private const val NOTIFICATION_ID = 101
@@ -24,11 +24,7 @@ class StationSearchService : Service() {
     private val outerDistance = 0.07
     private val innerDistance = 0.03
 
-    private var announcementType: Int? = 0
-    //announcementType = 0 - no announcement about next station
-    //announcementType = 1 - announce next station right after current station announcement
-    //announcementType = 2 - announce next station right after current station is drove throw
-
+    private var announcementType: Int = 0
     private var routeType = 0
 
     private var prevIndex = 0
@@ -47,7 +43,7 @@ class StationSearchService : Service() {
 
     interface OnStationStateChanged {
         fun announceCurrentStation(station: Station)
-        fun announceNextStation(station: Station, distance: Double)
+        fun announceNextStation(station: Station)
         fun isDirectionChanged(b: Boolean)
     }
 
@@ -57,14 +53,15 @@ class StationSearchService : Service() {
         audioSystem = AudioController(this.applicationContext)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        val pref = QueryPreferences(this)
+        announcementType = pref.getAnnounceStationType()
+
         createLocationCallback()
         createLocationRequest()
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        announcementType = intent?.getIntExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 0)
 
         val route: String? = intent?.getStringExtra(ROUTE_EXTRA)
         fullStationsList = repository.getStations(route)!!
@@ -76,7 +73,6 @@ class StationSearchService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        announcementType = intent?.getIntExtra(STATION_ANNOUNCEMENT_TYPE_EXTRA, 0)
         return StationSearchBinder()
     }
 
@@ -87,7 +83,6 @@ class StationSearchService : Service() {
     }
 
     override fun onDestroy() {
-
         stopLocationUpdates()
         super.onDestroy()
     }
@@ -98,17 +93,21 @@ class StationSearchService : Service() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
                 for (location in locationResult.locations) {
-                    announceNearestStationsState(
+                    announceNearestStation(
                             location.latitude,
                             location.longitude,
                             fullStationsList,
                             object : OnStationStateChanged {
                                 override fun announceCurrentStation(station: Station) {
-                                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                                    if (announcementType == ANNOUNCE_STATION_TYPE_EMPTY)
+                                        audioSystem.announceStation(station, 0)
+                                    else if (announcementType == ANNOUNCE_STATION_TYPE_CURRENT) {
+                                        audioSystem.announceStation(station, 1)
+                                    }
                                 }
 
-                                override fun announceNextStation(station: Station, distance: Double) {
-                                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                                override fun announceNextStation(station: Station) {
+                                    audioSystem.announceStation(station, 2)
                                 }
 
                                 override fun isDirectionChanged(b: Boolean) {
@@ -126,15 +125,15 @@ class StationSearchService : Service() {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
-    fun announceNearestStationsState(lat: Double, long: Double, list: List<Station>, listener: OnStationStateChanged) {
-        val stations = list.filter { station -> station.type == routeType }
+    fun announceNearestStation(lat: Double, long: Double, list: List<Station>, listener: OnStationStateChanged) {
+        val stations = list.filter { station -> station.route_type == routeType }
         val distToStationList: List<Double>? = stations.map { station -> getDistance(lat, long, station.latitude, station.longitude) }
         if (distToStationList != null && stations.isNotEmpty()) {
             val distance = distToStationList.min()
             val index = distToStationList.indexOf(distance)
             if (distance!! < outerDistance) {
                 if (!isOuter) {
-                    if (index!=0 && index - prevIndex <= 0) {
+                    if (index != 0 && index - prevIndex <= 0) {
                         listener.isDirectionChanged(true)
                         isDirectionChanged = true
                         prevIndex = 0
@@ -152,19 +151,20 @@ class StationSearchService : Service() {
                             listener.isDirectionChanged(false)
                             isDirectionChanged = false
                             prevIndex = index
+                            if (announcementType == ANNOUNCE_STATION_TYPE_NEXT) {
+                                Thread.sleep(2000)
+                                listener.announceNextStation(stations[index + 1])
+                            }
                         }
                     }
-                    if (announcementType == 1 && !isDirectionChanged && stations.size != index + 1) {
-                        listener.announceNextStation(stations[index + 1], 0.0)
-                    }
                 } else {
-                    if (announcementType == 2) {
+                    if (announcementType == ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY) {
                         if (distance < innerDistance) {
                             isInner = true
                         } else {
                             if (isInner) {
                                 if (!isDirectionChanged && stations.size != index + 1) {
-                                    listener.announceNextStation(stations[index + 1], distance)
+                                    listener.announceNextStation(stations[index + 1])
                                 }
                                 isInner = false
                             }
