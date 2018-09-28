@@ -96,9 +96,9 @@ class AudioController(private val context: Context) :
     private fun startTTS(type: Int) {
         var text: String? = null
         when (type) {
-            0 -> text = station!!.short_description
-            1 -> text = context.getString(R.string.station_tts) + station!!.short_description
-            2 -> text = context.getString(R.string.next_station_tts) + station!!.short_description
+            0 -> text = station!!.shortDescription
+            1 -> text = context.getString(R.string.station_tts) + station!!.shortDescription
+            2 -> text = context.getString(R.string.next_station_tts) + station!!.shortDescription
         }
         tts.setOnUtteranceProgressListener(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -113,7 +113,7 @@ class AudioController(private val context: Context) :
         try {
             when (type) {
                 0 -> {
-                    val uri = Environment.getExternalStorageDirectory().path + VOICE_PATH + station!!.path
+                    val uri = Environment.getExternalStorageDirectory().path + VOICE_PATH + station!!.voicePath
                     player = MediaPlayer.create(context, Uri.parse(uri))
                     station = null
                 }

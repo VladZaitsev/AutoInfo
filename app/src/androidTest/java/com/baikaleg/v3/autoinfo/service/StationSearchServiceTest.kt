@@ -31,15 +31,13 @@ fun loadStationsList(context: Context): List<Station> {
     for (i in 0 until (array.length())) {
         val jsonObject = array.getJSONObject(i)
         val station = Station(
-                jsonObject.getString("city"),
                 jsonObject.getString("route"),
                 jsonObject.getString("short_description"),
-                jsonObject.getString("description"),
                 jsonObject.getDouble("latitude"),
                 jsonObject.getDouble("longitude"),
-                jsonObject.getString("path"),
                 jsonObject.getInt("type")
         )
+        station.voicePath = jsonObject.getString("voice_path")
         station.id = jsonObject.getLong("id")
         stations.add(station)
     }
@@ -114,7 +112,7 @@ class StationSearchServiceTest {
                     })
         }
 
-        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.route_type == 0 }))
+        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.routeType == 0 }))
         assertThat(nextStationsListToTest, empty())
     }
 
@@ -152,7 +150,7 @@ class StationSearchServiceTest {
 
         val tempNextStationsList: MutableList<Station> = stations.asSequence()
                 .filter { station -> station.id != 0L }
-                .filter { station -> station.route_type == 0 }
+                .filter { station -> station.routeType == 0 }
                 .toMutableList()
 
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))

@@ -29,6 +29,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.station.AddEditStationActivity" />
+
         <service
             android:name=".service.stationsearch.StationSearchService"
             android:exported="false" />

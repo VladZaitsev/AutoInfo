@@ -126,7 +126,7 @@ class StationSearchService : Service() {
     }
 
     fun announceNearestStation(lat: Double, long: Double, list: List<Station>, listener: OnStationStateChanged) {
-        val stations = list.filter { station -> station.route_type == routeType }
+        val stations = list.filter { station -> station.routeType == routeType }
         val distToStationList: List<Double>? = stations.map { station -> getDistance(lat, long, station.latitude, station.longitude) }
         if (distToStationList != null && stations.isNotEmpty()) {
             val distance = distToStationList.min()
@@ -147,7 +147,7 @@ class StationSearchService : Service() {
                         isOuter = true
                         listener.announceCurrentStation(stations[index])
                         if (stations.size != index + 1) {
-                            displayDirection("${stations[prevIndex].short_description} - ${stations[index].short_description}")
+                            displayDirection("${stations[prevIndex].shortDescription} - ${stations[index].shortDescription}")
                             listener.isDirectionChanged(false)
                             isDirectionChanged = false
                             prevIndex = index

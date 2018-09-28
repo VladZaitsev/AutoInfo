@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/location_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="4dp"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@id/find_location_btn"
+                            android:layout_toStartOf="@id/find_location_btn"
+                            android:orientation="vertical">
+
+                            <EditText
+                                android:id="@+id/lat_field"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="latitude" />
+
+                            <EditText
+                                android:id="@+id/long_field"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="longitude" />
+                        </LinearLayout>
+
+
+                        <ImageButton
+                            android:id="@+id/find_location_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="10dp"
+                            android:src="@drawable/ic_add_location" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/audio_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:elevation="4dp"
+                        android:padding="8dp">
+
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="top"
+                    app:layout_collapseMode="pin" />
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/stations_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add"
+            app:layout_anchor="@+id/appbar"
+            app:layout_anchorGravity="right|bottom" />
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

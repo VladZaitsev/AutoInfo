@@ -25,12 +25,20 @@ class Repository private constructor(context: Context) {
         return db?.stationDao()?.getAllStationsInRoute(route)?.map { t: List<Station> -> t }?.blockingFirst()?.toList()
     }
 
-  /*  fun getRoutes(city: String): List<String>? {
-        return db?.stationDao()?.getAllRoutesInCity(city)?.map { t: List<String> -> t }?.blockingFirst()?.toList()
-    }*/
+    fun getStation(id: Int): Station? {
+        return db?.stationDao()?.getStation(id)
+    }
+
+    /*  fun getRoutes(city: String): List<String>? {
+          return db?.stationDao()?.getAllRoutesInCity(city)?.map { t: List<String> -> t }?.blockingFirst()?.toList()
+      }*/
 
     fun saveStation(station: Station) {
-        db?.stationDao()?.insert(station)
+        db?.stationDao()?.insertStation(station)
+    }
+
+    fun updateStation(station: Station) {
+        db?.stationDao()?.updateStation(station)
     }
 
     fun close() {
