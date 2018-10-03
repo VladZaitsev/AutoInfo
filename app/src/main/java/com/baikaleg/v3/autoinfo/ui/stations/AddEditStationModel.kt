@@ -2,6 +2,7 @@ package com.baikaleg.v3.autoinfo.ui.stations
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import com.baikaleg.v3.autoinfo.data.Repository
@@ -12,17 +13,36 @@ private const val PARAM_ADD_STATION_DIALOG_ID = 0
 private const val PARAM_EDIT_STATION_DIALOG_ID = 1
 
 class AddEditStationModel(application: Application) : AndroidViewModel(application) {
-    //  private val station = MutableLiveData<Station>()
+    private val data = MutableLiveData<Station>()
+    private val rawStations = MutableLiveData<List<Station>>()
+
     val stations = MutableLiveData<List<Station>>()
 
-    private var selected: Int = 0
+    val routeType = MutableLiveData<Int>()
+
 
     private val repository = Repository.getInstance(application)
-    private var id = 0
-
 
     init {
-        load(application)
+        setRouteType(2)
+        rawStations.value = loadStationsList(application)
+        load()
+    }
+
+    fun getData(): LiveData<Station> {
+        return data
+    }
+
+    fun setData(station: Station) {
+        data.value = station
+    }
+
+    fun setRouteType(typ: Int) {
+        routeType.value = typ
+    }
+
+    fun changeDirection() {
+        load()
     }
 
     /* private fun saveStation() {
@@ -32,8 +52,16 @@ class AddEditStationModel(application: Application) : AndroidViewModel(applicati
          }
      }*/
 
-    private fun load(application: Application) {
-        stations.value = loadStationsList(application)
+    private fun load() {
+        if (routeType.value != 2) {
+            stations.value = if (routeType.value == 0) {
+                routeType.value = 1
+                rawStations.value?.filter { station -> station.routeType == 1 }
+            } else {
+                routeType.value = 0
+                rawStations.value?.filter { station -> station.routeType == 0 }
+            }
+        }
     }
 
     private fun loadStationsList(context: Context): List<Station> {
@@ -52,7 +80,7 @@ class AddEditStationModel(application: Application) : AndroidViewModel(applicati
                     jsonObject.getInt("type")
             )
 //            station.voicePath = jsonObject.getString("voice_path")
-            station.id = jsonObject.getLong("id")
+            // station.id = jsonObject.getLong("id")
             station.orderNumber = i
             stations.add(station)
         }

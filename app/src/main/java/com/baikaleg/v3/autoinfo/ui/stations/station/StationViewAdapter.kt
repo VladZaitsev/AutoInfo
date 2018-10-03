@@ -6,9 +6,8 @@ import android.view.ViewGroup
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ItemViewStationBinding
 
-class StationViewAdapter : RecyclerView.Adapter<StationViewAdapter.StationViewHolder>() {
+class StationViewAdapter(private val navigator: OnStationClickNavigator) : RecyclerView.Adapter<StationViewAdapter.StationViewHolder>() {
     private var stations: MutableList<Station> = mutableListOf()
-
     fun refresh(list: List<Station>) {
         stations = list.toMutableList()
         notifyDataSetChanged()
@@ -21,6 +20,7 @@ class StationViewAdapter : RecyclerView.Adapter<StationViewAdapter.StationViewHo
     override fun onBindViewHolder(holder: StationViewHolder, position: Int) {
         val viewModel = StationItemViewModel(stations.get(position))
         holder.binding.viewmodel = viewModel
+        holder.binding.root.setOnClickListener { v -> navigator.onClick(stations.get(position)) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StationViewHolder {

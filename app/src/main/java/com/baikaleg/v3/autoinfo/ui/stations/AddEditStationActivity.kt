@@ -11,7 +11,9 @@ import android.support.v7.widget.RecyclerView
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
+import com.baikaleg.v3.autoinfo.ui.stations.station.OnStationClickNavigator
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
+import kotlinx.android.synthetic.main.activity_add_edit_station.*
 
 @BindingAdapter("app:stations")
 fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
@@ -19,7 +21,11 @@ fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
     stations?.let { adapter.refresh(it) }
 }
 
-class AddEditStationActivity : AppCompatActivity() {
+const val ROUTE_EXTRA_DATA = "route_extra"
+
+class AddEditStationActivity : AppCompatActivity(), OnStationClickNavigator {
+
+    private lateinit var viewModel: AddEditStationModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +33,10 @@ class AddEditStationActivity : AppCompatActivity() {
                 this, R.layout.activity_add_edit_station)
         setSupportActionBar(binding.toolbar)
         val actionBar = this.supportActionBar as ActionBar
+
+        viewModel = ViewModelProviders.of(this@AddEditStationActivity).get(AddEditStationModel::class.java)
+
+        val routeName = intent.getStringExtra(ROUTE_EXTRA_DATA) ?: "route"
 
         with(actionBar) {
             setDisplayHomeAsUpEnabled(true)
@@ -36,17 +46,22 @@ class AddEditStationActivity : AppCompatActivity() {
 
         with(binding) {
             setLifecycleOwner(this@AddEditStationActivity)
-            viewmodel = ViewModelProviders.of(this@AddEditStationActivity).get(AddEditStationModel::class.java)
+            viewmodel = viewModel
 
             with(recycler) {
                 layoutManager = LinearLayoutManager(this@AddEditStationActivity)
-                adapter = StationViewAdapter()
+                adapter = StationViewAdapter(this@AddEditStationActivity)
             }
 
-            with(collapsingToolbar){
-                title = "Nokia"
+            with(collapsingToolbar) {
+                title = routeName
                 setExpandedTitleColor(resources.getColor(android.R.color.transparent))
             }
         }
+    }
+
+    override fun onClick(station: Station) {
+        appbar.setExpanded(true)
+        viewModel.setData(station)
     }
 }
