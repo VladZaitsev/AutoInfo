@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -24,12 +25,27 @@ class AddEditStationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val binding: ActivityAddEditStationBinding = DataBindingUtil.setContentView(
                 this, R.layout.activity_add_edit_station)
+        setSupportActionBar(binding.toolbar)
+        val actionBar = this.supportActionBar as ActionBar
+
+        with(actionBar) {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+            title = null
+        }
+
         with(binding) {
             setLifecycleOwner(this@AddEditStationActivity)
             viewmodel = ViewModelProviders.of(this@AddEditStationActivity).get(AddEditStationModel::class.java)
+
             with(recycler) {
                 layoutManager = LinearLayoutManager(this@AddEditStationActivity)
                 adapter = StationViewAdapter()
+            }
+
+            with(collapsingToolbar){
+                title = "Nokia"
+                setExpandedTitleColor(resources.getColor(android.R.color.transparent))
             }
         }
     }
