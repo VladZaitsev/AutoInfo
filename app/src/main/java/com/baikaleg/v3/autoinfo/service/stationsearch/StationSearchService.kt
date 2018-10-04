@@ -25,7 +25,7 @@ class StationSearchService : Service() {
     private val innerDistance = 0.03
 
     private var announcementType: Int = 0
-    private var routeType = 0
+    private var isDirect = true
 
     private var prevIndex = 0
     private var isOuter: Boolean = false
@@ -126,7 +126,7 @@ class StationSearchService : Service() {
     }
 
     fun announceNearestStation(lat: Double, long: Double, list: List<Station>, listener: OnStationStateChanged) {
-        val stations = list.filter { station -> station.routeType == routeType }
+        val stations = list.filter { station -> station.isDirect == isDirect }
         val distToStationList: List<Double>? = stations.map { station -> getDistance(lat, long, station.latitude, station.longitude) }
         if (distToStationList != null && stations.isNotEmpty()) {
             val distance = distToStationList.min()
@@ -137,11 +137,7 @@ class StationSearchService : Service() {
                         listener.isDirectionChanged(true)
                         isDirectionChanged = true
                         prevIndex = 0
-                        when (routeType) {
-                            0 -> routeType = 1
-                            1 -> routeType = 0
-                            2 -> sendMessage(getString(R.string.msg_wrong_direction))
-                        }
+                        isDirect = !isDirect
                         return
                     } else {
                         isOuter = true

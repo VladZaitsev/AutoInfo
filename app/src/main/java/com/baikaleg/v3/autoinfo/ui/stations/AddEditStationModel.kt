@@ -5,23 +5,21 @@ import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
+import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.data.Repository
 import com.baikaleg.v3.autoinfo.data.model.Station
 import org.json.JSONArray
 
-private const val PARAM_ADD_STATION_DIALOG_ID = 0
-private const val PARAM_EDIT_STATION_DIALOG_ID = 1
 
 class AddEditStationModel(application: Application) : AndroidViewModel(application) {
     private val data = MutableLiveData<Station>()
     private val rawStations = MutableLiveData<List<Station>>()
 
-    val stations = MutableLiveData<List<Station>>()
-
-    val routeType = MutableLiveData<Int>()
-
-
+    private val pref = QueryPreferences(application)
     private val repository = Repository.getInstance(application)
+
+    val stations = MutableLiveData<List<Station>>()
+    val routeType = MutableLiveData<Int>()
 
     init {
         setRouteType(2)
@@ -56,10 +54,10 @@ class AddEditStationModel(application: Application) : AndroidViewModel(applicati
         if (routeType.value != 2) {
             stations.value = if (routeType.value == 0) {
                 routeType.value = 1
-                rawStations.value?.filter { station -> station.routeType == 1 }
+                rawStations.value?.filter { station -> !station.isDirect }
             } else {
                 routeType.value = 0
-                rawStations.value?.filter { station -> station.routeType == 0 }
+                rawStations.value?.filter { station -> station.isDirect }
             }
         }
     }
@@ -77,7 +75,7 @@ class AddEditStationModel(application: Application) : AndroidViewModel(applicati
                     jsonObject.getString("short_description"),
                     jsonObject.getDouble("latitude"),
                     jsonObject.getDouble("longitude"),
-                    jsonObject.getInt("type")
+                    jsonObject.getBoolean("type")
             )
 //            station.voicePath = jsonObject.getString("voice_path")
             // station.id = jsonObject.getLong("id")

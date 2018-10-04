@@ -48,17 +48,41 @@
                         android:orientation="vertical"
                         app:layout_collapseMode="parallax">
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="50dp"
+                                android:layout_marginStart="50dp"
+                                android:layout_marginTop="16dp"
+                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:hint="@string/station"
+                                android:padding="8dp" />
+                        </LinearLayout>
+
                         <RelativeLayout
                             android:id="@+id/location_layout"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:elevation="4dp"
-                            android:padding="8dp">
+                            android:layout_height="wrap_content">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_toLeftOf="@id/find_location_btn"
                                 android:layout_toStartOf="@id/find_location_btn"
                                 android:orientation="vertical">
@@ -67,17 +91,16 @@
                                     android:id="@+id/lat_field"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="latitude"
+                                    android:hint="@string/latitude"
                                     android:text="@{viewmodel.data.latitude != 0.0 ? `` + viewmodel.data.latitude : ``}" />
 
                                 <EditText
                                     android:id="@+id/long_field"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:hint="longitude"
+                                    android:hint="@string/longitude"
                                     android:text="@{viewmodel.data.longitude != 0.0 ? `` + viewmodel.data.longitude : ``}" />
                             </LinearLayout>
-
 
                             <ImageButton
                                 android:id="@+id/find_location_btn"
@@ -86,16 +109,57 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_alignParentRight="true"
                                 android:layout_centerVertical="true"
-                                android:layout_margin="10dp"
-                                android:src="@drawable/ic_add_location" />
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="18dp"
+                                android:layout_marginStart="8dp"
+                                android:background="@drawable/small_btn_click"
+                                android:contentDescription="@string/cd_detect_current_location"
+                                app:srcCompat="@drawable/ic_add_location" />
                         </RelativeLayout>
 
                         <RelativeLayout
                             android:id="@+id/audio_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:elevation="4dp"
-                            android:padding="8dp"></RelativeLayout>
+                            android:background="@color/colorPrimaryDark"
+                            android:padding="8dp">
+
+                            <ImageButton
+                                android:id="@+id/play_btn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:background="@drawable/big_btn_click"
+                                android:contentDescription="@string/cd_play_voice"
+                                app:srcCompat="@drawable/ic_play" />
+
+                            <ImageButton
+                                android:id="@+id/mic_btn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="8dp"
+                                android:layout_toEndOf="@id/upload_btn"
+                                android:layout_toRightOf="@id/upload_btn"
+                                android:background="@drawable/small_btn_click"
+                                android:contentDescription="@string/cd_record_voice"
+                                app:srcCompat="@drawable/ic_mic" />
+
+                            <ImageButton
+                                android:id="@+id/upload_btn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentStart="true"
+                                android:layout_centerVertical="true"
+                                android:layout_margin="8dp"
+                                android:background="@drawable/small_btn_click"
+                                android:contentDescription="@string/cd_load_file_with_voice"
+                                app:srcCompat="@drawable/ic_file_upload" />
+
+                        </RelativeLayout>
                     </LinearLayout>
 
                     <android.support.v7.widget.Toolbar
@@ -127,20 +191,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
-                android:src="@drawable/ic_add"
+                app:fabSize="normal"
                 app:layout_anchor="@+id/appbar"
-                app:layout_anchorGravity="right|bottom" />
+                app:layout_anchorGravity="right|bottom"
+                app:srcCompat="@drawable/ic_add" />
         </android.support.design.widget.CoordinatorLayout>
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:background="@drawable/small_btn_click"
+            android:contentDescription="@string/cd_change_route_direction"
             android:onClick="@{()->viewmodel.changeDirection()}"
-            android:src="@drawable/ic_swap_vert"
             android:visibility="@{viewmodel.routeType==2 ? View.GONE : View.VISIBLE, default=gone}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_swap_vert" />
     </android.support.constraint.ConstraintLayout>
 
 </layout>

@@ -11,4 +11,16 @@
     <!--TTS -->
     <string name="station_tts">Остановка,</string>
     <string name="next_station_tts">Следующая остановка,</string>
+
+    <!--content description -->
+    <string name="cd_change_route_direction">change route direction</string>
+    <string name="cd_load_file_with_voice">load file with voice</string>
+    <string name="cd_record_voice">record voice</string>
+    <string name="cd_play_voice">play voice</string>
+    <string name="cd_detect_current_location">detect current location</string>
+
+    <string name="station">station</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
+
 </resources>
