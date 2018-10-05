@@ -9,6 +9,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="route"
+            type="String" />
+
+        <variable
             name="viewmodel"
             type="com.baikaleg.v3.autoinfo.ui.stations.AddEditStationModel" />
     </data>
@@ -69,13 +73,22 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_marginTop="8dp"
                                 android:hint="@string/station"
-                                android:padding="8dp" />
+                                android:padding="8dp"
+                                android:text="@{viewmodel.description}" />
                         </LinearLayout>
 
                         <RelativeLayout
                             android:id="@+id/location_layout"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
+
+                            <ProgressBar
+                                android:id="@+id/progress_bar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_centerVertical="true"
+                                android:visibility="@{viewmodel.isLocationSearch() ? View.VISIBLE: View.GONE  , default=gone}" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -92,14 +105,14 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/latitude"
-                                    android:text="@{viewmodel.data.latitude != 0.0 ? `` + viewmodel.data.latitude : ``}" />
+                                    android:text="@{viewmodel.latitude != 0.0 ? `` + viewmodel.latitude : ``}" />
 
                                 <EditText
                                     android:id="@+id/long_field"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/longitude"
-                                    android:text="@{viewmodel.data.longitude != 0.0 ? `` + viewmodel.data.longitude : ``}" />
+                                    android:text="@{viewmodel.longitude != 0.0 ? `` + viewmodel.longitude : ``}" />
                             </LinearLayout>
 
                             <ImageButton
@@ -115,6 +128,7 @@
                                 android:layout_marginStart="8dp"
                                 android:background="@drawable/small_btn_click"
                                 android:contentDescription="@string/cd_detect_current_location"
+                                android:onClick="@{() -> viewmodel.requestLocationPermission()}"
                                 app:srcCompat="@drawable/ic_add_location" />
                         </RelativeLayout>
 
@@ -145,6 +159,7 @@
                                 android:layout_toRightOf="@id/upload_btn"
                                 android:background="@drawable/small_btn_click"
                                 android:contentDescription="@string/cd_record_voice"
+                                android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
                                 app:srcCompat="@drawable/ic_mic" />
 
                             <ImageButton
@@ -157,6 +172,7 @@
                                 android:layout_margin="8dp"
                                 android:background="@drawable/small_btn_click"
                                 android:contentDescription="@string/cd_load_file_with_voice"
+                                android:visibility="@{viewmodel.isTTS() ? View.GONE :  View.VISIBLE, default=gone}"
                                 app:srcCompat="@drawable/ic_file_upload" />
 
                         </RelativeLayout>
@@ -204,7 +220,7 @@
             android:background="@drawable/small_btn_click"
             android:contentDescription="@string/cd_change_route_direction"
             android:onClick="@{()->viewmodel.changeDirection()}"
-            android:visibility="@{viewmodel.routeType==2 ? View.GONE : View.VISIBLE, default=gone}"
+            android:visibility="@{viewmodel.isCircleRoute() ? View.GONE : View.VISIBLE, default=gone}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_swap_vert" />

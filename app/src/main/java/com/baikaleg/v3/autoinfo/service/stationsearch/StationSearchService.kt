@@ -15,10 +15,17 @@ import com.baikaleg.v3.autoinfo.audio.AudioController
 import com.baikaleg.v3.autoinfo.data.*
 import com.google.android.gms.location.*
 
+fun createLocationRequest(time: Long): LocationRequest {
+    return LocationRequest().apply {
+        interval = time
+        fastestInterval = time
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+}
+
 private const val NOTIFICATION_ID = 101
 private const val INTERVAL: Long = 1000
 private const val EARTH_RADIUS = 6378.1370
-
 
 class StationSearchService : Service() {
     private val outerDistance = 0.07
@@ -38,7 +45,6 @@ class StationSearchService : Service() {
     private lateinit var audioSystem: AudioController
 
     private lateinit var locationCallback: LocationCallback
-    private lateinit var locationRequest: LocationRequest
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     interface OnStationStateChanged {
@@ -57,7 +63,6 @@ class StationSearchService : Service() {
         announcementType = pref.getAnnounceStationType()
 
         createLocationCallback()
-        createLocationRequest()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -122,7 +127,7 @@ class StationSearchService : Service() {
 
     @SuppressWarnings("MissingPermission")
     private fun startLocationUpdates() {
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        fusedLocationClient.requestLocationUpdates(createLocationRequest(INTERVAL), locationCallback, null)
     }
 
     fun announceNearestStation(lat: Double, long: Double, list: List<Station>, listener: OnStationStateChanged) {
@@ -175,14 +180,6 @@ class StationSearchService : Service() {
 
     private fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
-    }
-
-    private fun createLocationRequest() {
-        locationRequest = LocationRequest().apply {
-            interval = INTERVAL
-            fastestInterval = INTERVAL
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
     }
 
     private fun setNotification(): Notification {
