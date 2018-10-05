@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.content.ContextCompat
@@ -16,10 +15,13 @@ import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.service.stationsearch.createLocationRequest
 import com.google.android.gms.location.*
-import org.json.JSONArray
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
-class AddEditStationModel(application: Application, private val route: Route, private val navigator: OnStationChangeNavigator) : AndroidViewModel(application) {
-    private val rawStations = MutableLiveData<List<Station>>()
+/**
+ * The ViewModel for [AddEditStationActivity]
+ */
+class AddEditStationModel(application: Application, val route: Route, private val navigator: OnStationChangeNavigator) : AndroidViewModel(application) {
 
     private lateinit var locationCallback: LocationCallback
     private var locationClient: FusedLocationProviderClient
@@ -30,19 +32,18 @@ class AddEditStationModel(application: Application, private val route: Route, pr
 
     private var isDirect = true
 
-    val isCircleRoute = MutableLiveData<Boolean>()
-    val stations = MutableLiveData<List<Station>>()
+    var allStations = MutableLiveData<List<Station>>()
+    var stations = MutableLiveData<List<Station>>()
     val isTTS = MutableLiveData<Boolean>()
     val isLocationSearch = MutableLiveData<Boolean>()
 
     //fields
-    val longitude = MutableLiveData<Double>()
-    val latitude = MutableLiveData<Double>()
+    val longitude = MutableLiveData<String>()
+    val latitude = MutableLiveData<String>()
     val description = MutableLiveData<String>()
 
     init {
         isTTS.value = pref.getAnnounceAudioType() == ANNOUNCE_AUDIO_TYPE_TTS
-        isCircleRoute.value = route.isCircle
 
         locationRequest = createLocationRequest(2000)
         locationClient = LocationServices.getFusedLocationProviderClient(application)
@@ -51,8 +52,8 @@ class AddEditStationModel(application: Application, private val route: Route, pr
                 locationResult ?: return
                 for (location in locationResult.locations) {
                     if (location != null) {
-                        latitude.value = location.latitude
-                        longitude.value = location.longitude
+                        latitude.value = location.latitude.toString()
+                        longitude.value = location.longitude.toString()
 
                         isLocationSearch.value = false
 
@@ -61,19 +62,31 @@ class AddEditStationModel(application: Application, private val route: Route, pr
                 }
             }
         }
-
-        rawStations.value = loadStationsList(application)//repository.getStations(route.name)
-        load()
+        repository.getStations(route.name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ data: List<Station>? ->
+                    allStations.postValue(data)
+                    stations.postValue(data?.filter { station -> station.isDirect == isDirect })
+                })
     }
 
     fun setStation(station: Station) {
-        latitude.value = station.latitude
-        longitude.value = station.longitude
+        latitude.value = station.latitude.toString()
+        longitude.value = station.longitude.toString()
         description.value = station.shortDescription
     }
 
     fun changeDirection() {
-        load()
+        if(!route.isCircle){
+            isDirect = !isDirect
+            stations.value = allStations.value?.filter { station -> station.isDirect == isDirect }
+        }
+    }
+
+    fun saveStation() {
+        val station = Station(route.name, description.value!!, latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
+        repository.saveStation(station)
     }
 
     fun requestLocationPermission() {
@@ -98,40 +111,5 @@ class AddEditStationModel(application: Application, private val route: Route, pr
             }
         }
         return true
-    }
-
-    private fun load() {
-        if (!route.isCircle) {
-            stations.value = if (isDirect) {
-                isDirect = false
-                rawStations.value?.filter { station -> !station.isDirect }
-            } else {
-                isDirect = true
-                rawStations.value?.filter { station -> station.isDirect }
-            }
-        }
-    }
-
-    private fun loadStationsList(context: Context): List<Station> {
-        val stations: MutableList<Station> = mutableListOf()
-        val jsonString = context.assets.open("test_stations.txt").bufferedReader().use {
-            it.readText()
-        }
-        val array = JSONArray(jsonString)
-        for (i in 0 until (array.length())) {
-            val jsonObject = array.getJSONObject(i)
-            val station = Station(
-                    jsonObject.getString("route"),
-                    jsonObject.getString("short_description"),
-                    jsonObject.getDouble("latitude"),
-                    jsonObject.getDouble("longitude"),
-                    jsonObject.getBoolean("type")
-            )
-//            station.voicePath = jsonObject.getString("voice_path")
-            // station.id = jsonObject.getLong("id")
-            station.orderNumber = i
-            stations.add(station)
-        }
-        return stations
     }
 }

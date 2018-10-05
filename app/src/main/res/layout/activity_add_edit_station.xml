@@ -63,6 +63,7 @@
                                 android:layout_marginLeft="50dp"
                                 android:layout_marginStart="50dp"
                                 android:layout_marginTop="16dp"
+                                android:text="@{viewmodel.route.name}"
                                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                                 android:textStyle="bold" />
 
@@ -74,7 +75,7 @@
                                 android:layout_marginTop="8dp"
                                 android:hint="@string/station"
                                 android:padding="8dp"
-                                android:text="@{viewmodel.description}" />
+                                android:text="@={viewmodel.description}" />
                         </LinearLayout>
 
                         <RelativeLayout
@@ -105,14 +106,14 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/latitude"
-                                    android:text="@{viewmodel.latitude != 0.0 ? `` + viewmodel.latitude : ``}" />
+                                    android:text="@={viewmodel.latitude}" />
 
                                 <EditText
                                     android:id="@+id/long_field"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:hint="@string/longitude"
-                                    android:text="@{viewmodel.longitude != 0.0 ? `` + viewmodel.longitude : ``}" />
+                                    android:text="@={viewmodel.longitude}" />
                             </LinearLayout>
 
                             <ImageButton
@@ -207,6 +208,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
+                android:onClick="@{()->viewmodel.saveStation()}"
                 app:fabSize="normal"
                 app:layout_anchor="@+id/appbar"
                 app:layout_anchorGravity="right|bottom"
@@ -220,7 +222,7 @@
             android:background="@drawable/small_btn_click"
             android:contentDescription="@string/cd_change_route_direction"
             android:onClick="@{()->viewmodel.changeDirection()}"
-            android:visibility="@{viewmodel.isCircleRoute() ? View.GONE : View.VISIBLE, default=gone}"
+            android:visibility="@{viewmodel.route.circle ? View.GONE : View.VISIBLE, default=gone}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_swap_vert" />

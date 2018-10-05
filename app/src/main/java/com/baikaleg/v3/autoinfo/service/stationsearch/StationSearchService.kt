@@ -14,6 +14,8 @@ import com.baikaleg.v3.autoinfo.ui.main.*
 import com.baikaleg.v3.autoinfo.audio.AudioController
 import com.baikaleg.v3.autoinfo.data.*
 import com.google.android.gms.location.*
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 fun createLocationRequest(time: Long): LocationRequest {
     return LocationRequest().apply {
@@ -68,8 +70,11 @@ class StationSearchService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
-        val route: String? = intent?.getStringExtra(ROUTE_EXTRA)
-        fullStationsList = repository.getStations(route)!!
+        val route: String = intent!!.getStringExtra(ROUTE_EXTRA)
+        repository.getStations(route)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ data: List<Station>? -> fullStationsList = data!! })
 
         startLocationUpdates()
 

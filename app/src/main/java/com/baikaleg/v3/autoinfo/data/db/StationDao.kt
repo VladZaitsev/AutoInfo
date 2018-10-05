@@ -15,7 +15,7 @@ interface StationDao {
     fun getAllRoutesInCity(city: String): Flowable<List<String>>
 
     @Query("SELECT * FROM stationData WHERE route = :route")
-    fun getAllStationsInRoute(route: String?): Flowable<List<Station>>
+    fun getStations(route: String?): Flowable<List<Station>>
 
     @Query("SELECT * FROM stationData where id = :id")
     fun getStation(id: Int): Station
