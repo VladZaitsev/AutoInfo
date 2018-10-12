@@ -3,10 +3,12 @@ package com.baikaleg.v3.autoinfo.ui.stations
 import android.app.Application
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import android.content.Context
 import com.baikaleg.v3.autoinfo.data.model.Route
+import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
 
-class AddEditStationModelFactory(val application: Application, val route: Route, val navigator: OnStationChangeNavigator) : ViewModelProvider.Factory {
+class AddEditStationModelFactory(private val application: Application,
+                                 private val route: Route,
+                                 private val navigator: OnStationChangeNavigator) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AddEditStationModel::class.java)) {

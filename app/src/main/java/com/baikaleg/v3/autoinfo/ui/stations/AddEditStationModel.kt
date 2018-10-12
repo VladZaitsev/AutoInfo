@@ -14,6 +14,7 @@ import com.baikaleg.v3.autoinfo.data.Repository
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.service.stationsearch.createLocationRequest
+import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.google.android.gms.location.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -21,7 +22,9 @@ import io.reactivex.schedulers.Schedulers
 /**
  * The ViewModel for [AddEditStationActivity]
  */
-class AddEditStationModel(application: Application, val route: Route, private val navigator: OnStationChangeNavigator) : AndroidViewModel(application) {
+class AddEditStationModel(application: Application, val route: Route, private val navigator: OnStationChangeNavigator) :
+        StationTouchCallback.ItemTouchHelperContract,
+        AndroidViewModel(application) {
 
     private lateinit var locationCallback: LocationCallback
     private var locationClient: FusedLocationProviderClient
@@ -32,8 +35,8 @@ class AddEditStationModel(application: Application, val route: Route, private va
 
     private var isDirect = true
 
-    var allStations = MutableLiveData<List<Station>>()
-    var stations = MutableLiveData<List<Station>>()
+    private var allStations = MutableLiveData<List<Station>>()
+    var stations = MutableLiveData<MutableList<Station>>()
     val isTTS = MutableLiveData<Boolean>()
     val isLocationSearch = MutableLiveData<Boolean>()
 
@@ -67,8 +70,46 @@ class AddEditStationModel(application: Application, val route: Route, private va
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ data: List<Station>? ->
                     allStations.postValue(data)
-                    stations.postValue(data?.filter { station -> station.isDirect == isDirect })
+                    stations.postValue(data?.filter { station -> station.isDirect == isDirect }?.toMutableList())
                 })
+    }
+
+    override fun onMoved(fromPosition: Int, toPosition: Int) {
+        if (fromPosition > toPosition) {
+            val from = stations.value!![fromPosition]
+            from.orderNumber = toPosition + 1
+
+            stations.value!!.removeAt(fromPosition)
+            for (i in toPosition + 1..stations.value!!.size) {
+                val ss = stations.value!![i - 1]
+                ss.orderNumber = i + 1
+                repository.updateStation(ss)
+            }
+            repository.updateStation(from)
+        } else {
+            val from = stations.value!![fromPosition]
+            from.orderNumber = toPosition + 1
+
+            stations.value!!.removeAt(fromPosition)
+            for (i in fromPosition until toPosition) {
+                val ss = stations.value!![i]
+                ss.orderNumber = i+1
+                repository.updateStation(ss)
+            }
+            repository.updateStation(from)
+        }
+
+    }
+
+    override fun onRemoved(position: Int) {
+        if (position != stations.value!!.size) {
+            for (i in position + 1 until stations.value!!.size) {
+                val s = stations.value!![i]
+                s.orderNumber = i
+                repository.updateStation(s)
+            }
+        }
+        repository.deleteStation(stations.value!![position])
     }
 
     fun setStation(station: Station) {
@@ -78,16 +119,19 @@ class AddEditStationModel(application: Application, val route: Route, private va
     }
 
     fun changeDirection() {
-        if(!route.isCircle){
+        if (!route.isCircle) {
             isDirect = !isDirect
-            stations.value = allStations.value?.filter { station -> station.isDirect == isDirect }
+            stations.value = allStations.value?.filter { station -> station.isDirect == isDirect }?.toMutableList()
         }
     }
 
     fun saveStation() {
         val station = Station(route.name, description.value!!, latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
+        station.orderNumber = stations.value?.size!! + 1
+        stations.value?.add(station)
         repository.saveStation(station)
     }
+
 
     fun requestLocationPermission() {
         if (isLocationControlAllowed()) requestGpsSettings()

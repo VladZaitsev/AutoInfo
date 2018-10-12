@@ -9,223 +9,193 @@
         <import type="android.view.View" />
 
         <variable
-            name="route"
-            type="String" />
-
-        <variable
             name="viewmodel"
             type="com.baikaleg.v3.autoinfo.ui.stations.AddEditStationModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.design.widget.CoordinatorLayout
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:toolbarId="@+id/toolbar">
 
-            <android.support.design.widget.AppBarLayout
-                android:id="@+id/appbar"
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                app:toolbarId="@+id/toolbar">
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <android.support.design.widget.CollapsingToolbarLayout
-                    android:id="@+id/collapsing_toolbar"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fitsSystemWindows="true"
-                    app:contentScrim="?attr/colorPrimary"
-                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                    android:orientation="vertical"
+                    app:layout_collapseMode="parallax">
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        app:layout_collapseMode="parallax">
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginTop="16dp"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/station"
+                        android:padding="8dp"
+                        android:text="@={viewmodel.description}" />
+
+                    <RelativeLayout
+                        android:id="@+id/location_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:visibility="@{viewmodel.isLocationSearch() ? View.VISIBLE: View.GONE  , default=gone}" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="50dp"
-                                android:layout_marginStart="50dp"
-                                android:layout_marginTop="16dp"
-                                android:text="@{viewmodel.route.name}"
-                                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                                android:textStyle="bold" />
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
 
                             <EditText
-                                android:layout_width="match_parent"
+                                android:id="@+id/lat_field"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="8dp"
-                                android:hint="@string/station"
-                                android:padding="8dp"
-                                android:text="@={viewmodel.description}" />
+                                android:layout_weight="1"
+                                android:hint="@string/latitude"
+                                android:inputType="number|numberDecimal"
+                                android:text="@={viewmodel.latitude}" />
+
+                            <EditText
+                                android:id="@+id/long_field"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="@string/longitude"
+                                android:inputType="number|numberDecimal"
+                                android:text="@={viewmodel.longitude}" />
                         </LinearLayout>
+                    </RelativeLayout>
 
-                        <RelativeLayout
-                            android:id="@+id/location_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <ProgressBar
-                                android:id="@+id/progress_bar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerHorizontal="true"
-                                android:layout_centerVertical="true"
-                                android:visibility="@{viewmodel.isLocationSearch() ? View.VISIBLE: View.GONE  , default=gone}" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginStart="8dp"
-                                android:layout_toLeftOf="@id/find_location_btn"
-                                android:layout_toStartOf="@id/find_location_btn"
-                                android:orientation="vertical">
-
-                                <EditText
-                                    android:id="@+id/lat_field"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="@string/latitude"
-                                    android:text="@={viewmodel.latitude}" />
-
-                                <EditText
-                                    android:id="@+id/long_field"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="@string/longitude"
-                                    android:text="@={viewmodel.longitude}" />
-                            </LinearLayout>
-
-                            <ImageButton
-                                android:id="@+id/find_location_btn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_alignParentRight="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginLeft="8dp"
-                                android:layout_marginRight="18dp"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/small_btn_click"
-                                android:contentDescription="@string/cd_detect_current_location"
-                                android:onClick="@{() -> viewmodel.requestLocationPermission()}"
-                                app:srcCompat="@drawable/ic_add_location" />
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:id="@+id/audio_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="@color/colorPrimaryDark"
-                            android:padding="8dp">
-
-                            <ImageButton
-                                android:id="@+id/play_btn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerHorizontal="true"
-                                android:layout_centerVertical="true"
-                                android:background="@drawable/big_btn_click"
-                                android:contentDescription="@string/cd_play_voice"
-                                app:srcCompat="@drawable/ic_play" />
-
-                            <ImageButton
-                                android:id="@+id/mic_btn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_margin="8dp"
-                                android:layout_toEndOf="@id/upload_btn"
-                                android:layout_toRightOf="@id/upload_btn"
-                                android:background="@drawable/small_btn_click"
-                                android:contentDescription="@string/cd_record_voice"
-                                android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
-                                app:srcCompat="@drawable/ic_mic" />
-
-                            <ImageButton
-                                android:id="@+id/upload_btn"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentLeft="true"
-                                android:layout_alignParentStart="true"
-                                android:layout_centerVertical="true"
-                                android:layout_margin="8dp"
-                                android:background="@drawable/small_btn_click"
-                                android:contentDescription="@string/cd_load_file_with_voice"
-                                android:visibility="@{viewmodel.isTTS() ? View.GONE :  View.VISIBLE, default=gone}"
-                                app:srcCompat="@drawable/ic_file_upload" />
-
-                        </RelativeLayout>
-                    </LinearLayout>
-
-                    <android.support.v7.widget.Toolbar
-                        android:id="@+id/toolbar"
+                    <LinearLayout
+                        android:id="@+id/audio_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="?attr/actionBarSize"
-                        android:layout_gravity="top"
-                        app:layout_collapseMode="pin"
-                        app:popupTheme="@style/AppTheme.PopupOverlay" />
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorBackground"
+                        android:gravity="center_horizontal">
 
-                </android.support.design.widget.CollapsingToolbarLayout>
+                        <ImageButton
+                            android:id="@+id/play_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/general_margin"
+                            android:background="@drawable/btn_click"
+                            android:contentDescription="@string/cd_play_voice"
+                            android:elevation="@dimen/btn_elevation"
+                            app:srcCompat="@drawable/ic_play" />
 
-            </android.support.design.widget.AppBarLayout>
+                        <ImageButton
+                            android:id="@+id/find_location_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/general_margin"
+                            android:background="@drawable/btn_click"
+                            android:contentDescription="@string/cd_detect_current_location"
+                            android:elevation="@dimen/btn_elevation"
+                            android:onClick="@{() -> viewmodel.requestLocationPermission()}"
+                            app:srcCompat="@drawable/ic_add_location" />
 
-            <FrameLayout
+                        <ImageButton
+                            android:id="@+id/add_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/general_margin"
+                            android:background="@drawable/btn_click"
+                            android:contentDescription="@string/cd_detect_current_location"
+                            android:elevation="@dimen/btn_elevation"
+                            android:onClick="@{()->viewmodel.saveStation()}"
+                            app:srcCompat="@drawable/ic_add" />
+
+                        <ImageButton
+                            android:id="@+id/mic_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="@dimen/general_margin"
+                            android:background="@drawable/btn_click"
+                            android:contentDescription="@string/cd_record_voice"
+                            android:elevation="@dimen/btn_elevation"
+                            android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
+                            app:srcCompat="@drawable/ic_mic" />
+
+                        <ImageButton
+                            android:id="@+id/upload_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/general_margin"
+                            android:background="@drawable/btn_click"
+                            android:contentDescription="@string/cd_load_file_with_voice"
+                            android:elevation="@dimen/btn_elevation"
+                            android:visibility="@{viewmodel.isTTS() ? View.GONE :  View.VISIBLE, default=gone}"
+                            app:srcCompat="@drawable/ic_file_upload" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:layout_gravity="top"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorBackground"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                app:stations="@{viewmodel.stations}" />
+        </FrameLayout>
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:stations="@{viewmodel.stations}" />
-            </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/fab_margin"
-                android:onClick="@{()->viewmodel.saveStation()}"
-                app:fabSize="normal"
-                app:layout_anchor="@+id/appbar"
-                app:layout_anchorGravity="right|bottom"
-                app:srcCompat="@drawable/ic_add" />
-        </android.support.design.widget.CoordinatorLayout>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:background="@drawable/small_btn_click"
-            android:contentDescription="@string/cd_change_route_direction"
-            android:onClick="@{()->viewmodel.changeDirection()}"
-            android:visibility="@{viewmodel.route.circle ? View.GONE : View.VISIBLE, default=gone}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_swap_vert" />
-    </android.support.constraint.ConstraintLayout>
 
 </layout>

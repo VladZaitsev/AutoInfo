@@ -8,23 +8,27 @@ import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
+import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
-import com.baikaleg.v3.autoinfo.ui.stations.station.OnStationClickNavigator
+import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import kotlinx.android.synthetic.main.activity_add_edit_station.*
 
 @BindingAdapter("app:stations")
 fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
@@ -38,11 +42,13 @@ private const val REQUEST_CHECK_SETTINGS = 202
 const val ROUTE_EXTRA_DATA = "route_extra"
 
 class AddEditStationActivity : AppCompatActivity(),
-        OnStationClickNavigator,
+        StationViewAdapter.StationClickNavigator,
         OnStationChangeNavigator,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
     private lateinit var viewModel: AddEditStationModel
+    private lateinit var route: Route
+    private lateinit var stationAdapter: StationViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +57,8 @@ class AddEditStationActivity : AppCompatActivity(),
         setSupportActionBar(binding.toolbar)
         val actionBar = this.supportActionBar as ActionBar
 
-        val route = Route("test", false) //intent.getParcelableExtra<Route>(ROUTE_EXTRA_DATA)
-
+        route = Route("test", false) //intent.getParcelableExtra<Route>(ROUTE_EXTRA_DATA)
+        stationAdapter = StationViewAdapter(this)
         val modelFactory = AddEditStationModelFactory(application, route, this)
         viewModel = ViewModelProviders
                 .of(this@AddEditStationActivity, modelFactory)
@@ -70,7 +76,7 @@ class AddEditStationActivity : AppCompatActivity(),
 
             with(recycler) {
                 layoutManager = LinearLayoutManager(this@AddEditStationActivity)
-                adapter = StationViewAdapter(this@AddEditStationActivity)
+                adapter = stationAdapter
             }
 
             with(collapsingToolbar) {
@@ -78,10 +84,30 @@ class AddEditStationActivity : AppCompatActivity(),
                 setExpandedTitleColor(resources.getColor(android.R.color.transparent))
             }
         }
+        binding.recycler.addItemDecoration(MarginItemDecoration(
+                resources.getDimension(R.dimen.general_margin).toInt()))
+
+        val callback = StationTouchCallback(this, viewModel)
+        val itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.recycler)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.station_menu, menu)
+        val item = menu?.findItem(R.id.change_direction)
+        item?.isVisible = !route.isCircle
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item?.itemId == R.id.change_direction) {
+            viewModel.changeDirection()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onClick(station: Station) {
-        appbar.setExpanded(true)
         viewModel.setStation(station)
     }
 
@@ -121,6 +147,20 @@ class AddEditStationActivity : AppCompatActivity(),
                 viewModel.requestGpsSettings()
             } else {
                 Toast.makeText(this, R.string.msg_use_location_not_allowed, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    class MarginItemDecoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(outRect: Rect, view: View,
+                                    parent: RecyclerView, state: RecyclerView.State) {
+            with(outRect) {
+                if (parent.getChildAdapterPosition(view) == 0) {
+                    top = spaceHeight
+                }
+                left = spaceHeight
+                right = spaceHeight
+                bottom = spaceHeight
             }
         }
     }

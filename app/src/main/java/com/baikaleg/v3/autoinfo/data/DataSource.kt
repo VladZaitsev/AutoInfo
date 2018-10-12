@@ -13,5 +13,7 @@ interface DataSource {
 
     fun updateStation(station: Station)
 
+    fun deleteStation(station: Station)
+
     fun getRoutes(): LiveData<List<Route>>
 }

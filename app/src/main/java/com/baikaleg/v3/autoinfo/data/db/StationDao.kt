@@ -4,6 +4,7 @@ import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import com.baikaleg.v3.autoinfo.data.model.Station
 import io.reactivex.Flowable
+import io.reactivex.Single
 
 @Dao
 interface StationDao {
@@ -14,7 +15,7 @@ interface StationDao {
     @Query("SELECT route FROM stationData WHERE city = :city")
     fun getAllRoutesInCity(city: String): Flowable<List<String>>
 
-    @Query("SELECT * FROM stationData WHERE route = :route")
+    @Query("SELECT * FROM stationData WHERE route = :route ORDER BY order_number")
     fun getStations(route: String?): Flowable<List<Station>>
 
     @Query("SELECT * FROM stationData where id = :id")
@@ -27,5 +28,5 @@ interface StationDao {
     fun insertStation(station: Station)
 
     @Delete
-    fun delete(station: Station)
+    fun deleteStation(station: Station)
 }
