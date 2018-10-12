@@ -43,7 +43,7 @@ const val ROUTE_EXTRA_DATA = "route_extra"
 
 class AddEditStationActivity : AppCompatActivity(),
         StationViewAdapter.StationClickNavigator,
-        OnStationChangeNavigator,
+        OnStationModelStateCallback,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
     private lateinit var viewModel: AddEditStationModel
@@ -131,6 +131,10 @@ class AddEditStationActivity : AppCompatActivity(),
                 }
             }
         }
+    }
+
+    override fun onMessageReceived(message:String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -50,6 +50,9 @@
                         android:layout_marginLeft="50dp"
                         android:layout_marginStart="50dp"
                         android:layout_marginTop="16dp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="@{@string/direction(viewmodel.stations.get(0).shortDescription,viewmodel.stations.get(viewmodel.stations.size()-1).shortDescription )}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textStyle="bold" />
 
@@ -59,7 +62,9 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
+                        android:focusable="false"
                         android:hint="@string/station"
+                        android:maxLines="1"
                         android:padding="8dp"
                         android:text="@={viewmodel.description}" />
 
@@ -90,8 +95,10 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:focusable="false"
                                 android:hint="@string/latitude"
                                 android:inputType="number|numberDecimal"
+                                android:maxLines="1"
                                 android:text="@={viewmodel.latitude}" />
 
                             <EditText
@@ -99,8 +106,10 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
+                                android:focusable="false"
                                 android:hint="@string/longitude"
                                 android:inputType="number|numberDecimal"
+                                android:maxLines="1"
                                 android:text="@={viewmodel.longitude}" />
                         </LinearLayout>
                     </RelativeLayout>

@@ -22,5 +22,6 @@
     <string name="station">station</string>
     <string name="latitude">latitude</string>
     <string name="longitude">longitude</string>
+    <string name="direction">%1$s - %2$s</string>
 
 </resources>

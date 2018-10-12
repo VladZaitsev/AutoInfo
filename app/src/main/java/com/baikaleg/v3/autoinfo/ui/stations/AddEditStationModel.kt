@@ -22,7 +22,7 @@ import io.reactivex.schedulers.Schedulers
 /**
  * The ViewModel for [AddEditStationActivity]
  */
-class AddEditStationModel(application: Application, val route: Route, private val navigator: OnStationChangeNavigator) :
+class AddEditStationModel(application: Application, val route: Route, private val navigator: OnStationModelStateCallback) :
         StationTouchCallback.ItemTouchHelperContract,
         AndroidViewModel(application) {
 
@@ -93,7 +93,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
             stations.value!!.removeAt(fromPosition)
             for (i in fromPosition until toPosition) {
                 val ss = stations.value!![i]
-                ss.orderNumber = i+1
+                ss.orderNumber = i + 1
                 repository.updateStation(ss)
             }
             repository.updateStation(from)
