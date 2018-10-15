@@ -4,10 +4,17 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.pm.PackageManager
+import android.databinding.Bindable
 import android.os.Build
+import android.os.Environment
 import android.support.v4.content.ContextCompat
+import android.text.TextUtils
+import com.baikaleg.v3.autoinfo.audio.AudioController
+import com.baikaleg.v3.autoinfo.audio.VOICE_PATH
+import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_PLAYER
 import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_TTS
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.data.Repository
@@ -18,6 +25,7 @@ import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.google.android.gms.location.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.io.File
 
 /**
  * The ViewModel for [AddEditStationActivity]
@@ -39,14 +47,17 @@ class AddEditStationModel(application: Application, val route: Route, private va
     var stations = MutableLiveData<MutableList<Station>>()
     val isTTS = MutableLiveData<Boolean>()
     val isLocationSearch = MutableLiveData<Boolean>()
+    val audio = AudioController(getApplication())
 
     //fields
     val longitude = MutableLiveData<String>()
     val latitude = MutableLiveData<String>()
-    val description = MutableLiveData<String>()
+    val shortDescription = MutableLiveData<String>()
 
     init {
-        isTTS.value = pref.getAnnounceAudioType() == ANNOUNCE_AUDIO_TYPE_TTS
+        //TODO change
+        isTTS.value = true
+        pref.setAnnounceAudioType(ANNOUNCE_AUDIO_TYPE_TTS)
 
         locationRequest = createLocationRequest(2000)
         locationClient = LocationServices.getFusedLocationProviderClient(application)
@@ -72,6 +83,10 @@ class AddEditStationModel(application: Application, val route: Route, private va
                     allStations.postValue(data)
                     stations.postValue(data?.filter { station -> station.isDirect == isDirect }?.toMutableList())
                 })
+
+        shortDescription.postValue("")
+        latitude.postValue("")
+        longitude.postValue("")
     }
 
     override fun onMoved(fromPosition: Int, toPosition: Int) {
@@ -115,7 +130,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
     fun setStation(station: Station) {
         latitude.value = station.latitude.toString()
         longitude.value = station.longitude.toString()
-        description.value = station.shortDescription
+        shortDescription.value = station.shortDescription
     }
 
     fun changeDirection() {
@@ -126,12 +141,53 @@ class AddEditStationModel(application: Application, val route: Route, private va
     }
 
     fun saveStation() {
-        val station = Station(route.name, description.value!!, latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
-        station.orderNumber = stations.value?.size!! + 1
-        stations.value?.add(station)
-        repository.saveStation(station)
+        when {
+            TextUtils.isEmpty(shortDescription.value) -> navigator.onMessageReceived("Please, type the description of the station")
+            TextUtils.isEmpty(latitude.value) -> navigator.onMessageReceived("Please, type the latitude of the station")
+            TextUtils.isEmpty(longitude.value) -> navigator.onMessageReceived("Please, type the longitude of the station")
+            else -> {
+                val station = Station(route.name, shortDescription.value!!, latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
+                station.orderNumber = stations.value?.size!! + 1
+                if (stations.value?.contains(station)!!) {
+                    navigator.onMessageReceived("You also have this station")
+                } else {
+                    stations.value?.add(station)
+                    repository.saveStation(station)
+                }
+            }
+        }
     }
 
+    fun recordVoice() {
+        if (TextUtils.isEmpty(shortDescription.value)) {
+            navigator.onMessageReceived("Please, type the description of the station")
+        } else {
+            navigator.onRecordBtnClicked(shortDescription.value!!)
+        }
+    }
+
+    fun uploadVoice() {
+
+    }
+
+    fun playVoice() {
+        if (TextUtils.isEmpty(shortDescription.value)) {
+            navigator.onMessageReceived("Please, type the description of  the station")
+        } else {
+            if (isTTS.value!!) {
+                audio.announceStation(shortDescription.value, 0)
+            } else {
+                val output = Environment.getExternalStorageDirectory().path + VOICE_PATH + shortDescription.value + ".3gp"
+                val file = File(output)
+                if (file.exists()) {
+                    audio.announceStation(shortDescription.value, 0)
+                } else {
+                    navigator.onMessageReceived("You do not have record")
+                }
+            }
+
+        }
+    }
 
     fun requestLocationPermission() {
         if (isLocationControlAllowed()) requestGpsSettings()

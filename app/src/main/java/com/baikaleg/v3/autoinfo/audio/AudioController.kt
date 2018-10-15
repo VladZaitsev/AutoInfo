@@ -29,7 +29,7 @@ class AudioController(private val context: Context) :
         TextToSpeech.OnInitListener,
         UtteranceProgressListener() {
 
-    private var station: Station? = null
+    private var station: String? = null
     private var player: MediaPlayer = MediaPlayer().apply {
         setWakeMode(context, PowerManager.PARTIAL_WAKE_LOCK)
     }
@@ -54,6 +54,7 @@ class AudioController(private val context: Context) :
                     .setOnAudioFocusChangeListener(this)
                     .build()
         }
+        //TODO change
         val telephony = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 //        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
     }
@@ -64,8 +65,8 @@ class AudioController(private val context: Context) :
      *               <code>1</code> current station prefix
      *               <code>2</code> next station prefix
      */
-    fun announceStation(station: Station?, type: Int) {
-        this.station = station
+    fun announceStation(stg: String?, type: Int) {
+        station = stg
         val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             am.requestAudioFocus(focusRequest)
         } else {
@@ -96,9 +97,9 @@ class AudioController(private val context: Context) :
     private fun startTTS(type: Int) {
         var text: String? = null
         when (type) {
-            0 -> text = station!!.shortDescription
-            1 -> text = context.getString(R.string.station_tts) + station!!.shortDescription
-            2 -> text = context.getString(R.string.next_station_tts) + station!!.shortDescription
+            0 -> text = station
+            1 -> text = context.getString(R.string.station_tts) + station
+            2 -> text = context.getString(R.string.next_station_tts) + station
         }
         tts.setOnUtteranceProgressListener(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -113,7 +114,7 @@ class AudioController(private val context: Context) :
         try {
             when (type) {
                 0 -> {
-                    val uri = Environment.getExternalStorageDirectory().path + VOICE_PATH + station!!.voicePath
+                    val uri = Environment.getExternalStorageDirectory().path + VOICE_PATH + station+ ".3gp"
                     player = MediaPlayer.create(context, Uri.parse(uri))
                     station = null
                 }

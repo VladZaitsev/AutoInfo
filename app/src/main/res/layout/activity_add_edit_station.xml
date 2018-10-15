@@ -50,9 +50,9 @@
                         android:layout_marginLeft="50dp"
                         android:layout_marginStart="50dp"
                         android:layout_marginTop="16dp"
-                        android:maxLines="1"
                         android:ellipsize="end"
-                        android:text="@{@string/direction(viewmodel.stations.get(0).shortDescription,viewmodel.stations.get(viewmodel.stations.size()-1).shortDescription )}"
+                        android:maxLines="1"
+                        android:text="@{viewmodel.stations.size != 0 ? @string/direction(viewmodel.stations.get(0).shortDescription,viewmodel.stations.get(viewmodel.stations.size()-1).shortDescription ) : ``}"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textStyle="bold" />
 
@@ -62,11 +62,10 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
-                        android:focusable="false"
                         android:hint="@string/station"
                         android:maxLines="1"
                         android:padding="8dp"
-                        android:text="@={viewmodel.description}" />
+                        android:text="@={viewmodel.shortDescription}" />
 
                     <RelativeLayout
                         android:id="@+id/location_layout"
@@ -95,7 +94,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:focusable="false"
                                 android:hint="@string/latitude"
                                 android:inputType="number|numberDecimal"
                                 android:maxLines="1"
@@ -106,7 +104,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:focusable="false"
                                 android:hint="@string/longitude"
                                 android:inputType="number|numberDecimal"
                                 android:maxLines="1"
@@ -119,6 +116,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/colorBackground"
+                        android:focusable="true"
                         android:gravity="center_horizontal">
 
                         <ImageButton
@@ -129,6 +127,7 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_play_voice"
                             android:elevation="@dimen/btn_elevation"
+                            android:onClick="@{() -> viewmodel.playVoice()}"
                             app:srcCompat="@drawable/ic_play" />
 
                         <ImageButton
@@ -162,6 +161,7 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_record_voice"
                             android:elevation="@dimen/btn_elevation"
+                            android:onClick="@{() -> viewmodel.recordVoice()}"
                             android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
                             app:srcCompat="@drawable/ic_mic" />
 
@@ -173,6 +173,7 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_load_file_with_voice"
                             android:elevation="@dimen/btn_elevation"
+                            android:onClick="@{() -> viewmodel.uploadVoice()}"
                             android:visibility="@{viewmodel.isTTS() ? View.GONE :  View.VISIBLE, default=gone}"
                             app:srcCompat="@drawable/ic_file_upload" />
 

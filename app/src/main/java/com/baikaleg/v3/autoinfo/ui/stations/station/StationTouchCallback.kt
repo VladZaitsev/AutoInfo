@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Vibrator
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -48,6 +49,7 @@ open class StationTouchCallback constructor(context: Context, private val callba
         orderChanged = true
         positionFrom = viewHolder.adapterPosition
         positionTo = target.adapterPosition
+
         return true
     }
 

@@ -110,14 +110,14 @@ class StationSearchService : Service() {
                             object : OnStationStateChanged {
                                 override fun announceCurrentStation(station: Station) {
                                     if (announcementType == ANNOUNCE_STATION_TYPE_EMPTY)
-                                        audioSystem.announceStation(station, 0)
+                                        audioSystem.announceStation(station.shortDescription, 0)
                                     else if (announcementType == ANNOUNCE_STATION_TYPE_CURRENT) {
-                                        audioSystem.announceStation(station, 1)
+                                        audioSystem.announceStation(station.shortDescription, 1)
                                     }
                                 }
 
                                 override fun announceNextStation(station: Station) {
-                                    audioSystem.announceStation(station, 2)
+                                    audioSystem.announceStation(station.shortDescription, 2)
                                 }
 
                                 override fun isDirectionChanged(b: Boolean) {

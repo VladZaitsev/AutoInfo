@@ -24,6 +24,7 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
+import com.baikaleg.v3.autoinfo.ui.dialog.RecordStationVoiceDialog
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
 import com.google.android.gms.common.api.ResolvableApiException
@@ -33,11 +34,14 @@ import com.google.android.gms.tasks.Task
 @BindingAdapter("app:stations")
 fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
     val adapter = recyclerView.adapter as StationViewAdapter
-    stations?.let { adapter.refresh(it) }
+    if(stations!=null){
+        adapter.refresh(stations)
+    }
 }
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
 private const val REQUEST_CHECK_SETTINGS = 202
+private const val REQUEST_VOICE_CREATED = 302
 
 const val ROUTE_EXTRA_DATA = "route_extra"
 
@@ -133,14 +137,22 @@ class AddEditStationActivity : AppCompatActivity(),
         }
     }
 
-    override fun onMessageReceived(message:String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onMessageReceived(message: String) {
+        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
+    }
+
+    override fun onRecordBtnClicked(desc: String) {
+        RecordStationVoiceDialog.show(this, desc)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CHECK_SETTINGS) {
             if (resultCode == Activity.RESULT_OK) {
                 viewModel.findLocation()
+            }
+        } else if (requestCode == REQUEST_VOICE_CREATED) {
+            if (resultCode == Activity.RESULT_OK) {
+
             }
         }
     }

@@ -17,9 +17,6 @@ data class Station(@ColumnInfo(name = "route") var route: String,
     @ColumnInfo(name = "order_number")
     var orderNumber: Int = 0
 
-    @ColumnInfo(name = "voice_path")
-    var voicePath: String = ""
-
     @ColumnInfo(name = "city")
     var city: String = ""
 

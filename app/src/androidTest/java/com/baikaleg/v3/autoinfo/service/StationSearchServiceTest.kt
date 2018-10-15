@@ -35,9 +35,8 @@ fun loadStationsList(context: Context): List<Station> {
                 jsonObject.getString("short_description"),
                 jsonObject.getDouble("latitude"),
                 jsonObject.getDouble("longitude"),
-                jsonObject.getInt("type")
+                jsonObject.getBoolean("type")
         )
-        station.voicePath = jsonObject.getString("voice_path")
         station.id = jsonObject.getLong("id")
         stations.add(station)
     }
@@ -100,7 +99,7 @@ class StationSearchServiceTest {
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
                             currentStationsListToTest.add(station)
-                            audioSystem.announceStation(station, 1)
+                            audioSystem.announceStation(station.shortDescription, 1)
                         }
 
                         override fun announceNextStation(station: Station) {
@@ -112,7 +111,7 @@ class StationSearchServiceTest {
                     })
         }
 
-        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.routeType == 0 }))
+        assertThat(currentStationsListToTest, equalTo(stations.filter { station -> station.isDirect }))
         assertThat(nextStationsListToTest, empty())
     }
 
@@ -135,12 +134,12 @@ class StationSearchServiceTest {
                     stations,
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
-                            audioSystem.announceStation(station, 1)
+                            audioSystem.announceStation(station.shortDescription, 1)
                         }
 
                         override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
-                            audioSystem.announceStation(station, 2)
+                            audioSystem.announceStation(station.shortDescription, 2)
                         }
 
                         override fun isDirectionChanged(b: Boolean) {
@@ -150,7 +149,7 @@ class StationSearchServiceTest {
 
         val tempNextStationsList: MutableList<Station> = stations.asSequence()
                 .filter { station -> station.id != 0L }
-                .filter { station -> station.routeType == 0 }
+                .filter { station -> station.isDirect }
                 .toMutableList()
 
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))

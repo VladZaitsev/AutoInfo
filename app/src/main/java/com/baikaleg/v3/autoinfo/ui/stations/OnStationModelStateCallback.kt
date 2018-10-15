@@ -4,7 +4,9 @@ import com.google.android.gms.location.LocationRequest
 
 interface OnStationModelStateCallback {
 
-    fun onMessageReceived(message:String)
+    fun onRecordBtnClicked(desc: String)
+
+    fun onMessageReceived(message: String)
 
     fun onLocationPermissionRequest()
 
