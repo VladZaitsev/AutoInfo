@@ -4,17 +4,14 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.pm.PackageManager
-import android.databinding.Bindable
 import android.os.Build
 import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import com.baikaleg.v3.autoinfo.audio.AudioController
 import com.baikaleg.v3.autoinfo.audio.VOICE_PATH
-import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_PLAYER
 import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_TTS
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.data.Repository
@@ -193,6 +190,10 @@ class AddEditStationModel(application: Application, val route: Route, private va
         if (isLocationControlAllowed()) requestGpsSettings()
     }
 
+    fun requestAudioRecordPermission(){
+        if(isRecordVoiceAllowed()) recordVoice()
+    }
+
     fun requestGpsSettings() {
         navigator.onLocationSettingsRequest(locationRequest)
     }
@@ -207,6 +208,17 @@ class AddEditStationModel(application: Application, val route: Route, private va
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 navigator.onLocationPermissionRequest()
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun isRecordVoiceAllowed(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(getApplication(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                navigator.onRecordPermissionRequest()
                 return false
             }
         }

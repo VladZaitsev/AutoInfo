@@ -161,7 +161,7 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_record_voice"
                             android:elevation="@dimen/btn_elevation"
-                            android:onClick="@{() -> viewmodel.recordVoice()}"
+                            android:onClick="@{() -> viewmodel.requestAudioRecordPermission()}"
                             android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
                             app:srcCompat="@drawable/ic_mic" />
 

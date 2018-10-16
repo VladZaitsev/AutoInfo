@@ -34,14 +34,16 @@ import com.google.android.gms.tasks.Task
 @BindingAdapter("app:stations")
 fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
     val adapter = recyclerView.adapter as StationViewAdapter
-    if(stations!=null){
+    if (stations != null) {
         adapter.refresh(stations)
     }
 }
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
-private const val REQUEST_CHECK_SETTINGS = 202
-private const val REQUEST_VOICE_CREATED = 302
+private const val REQUEST_ACCESS_RECORD_AUDIO = 202
+private const val REQUEST_CHECK_SETTINGS = 203
+
+private const val REQUEST_VOICE_CREATED = 305
 
 const val ROUTE_EXTRA_DATA = "route_extra"
 
@@ -120,6 +122,11 @@ class AddEditStationActivity : AppCompatActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_ACCESS_FINE_LOCATION)
     }
 
+    override fun onRecordPermissionRequest() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_ACCESS_RECORD_AUDIO)
+    }
+
     override fun onLocationSettingsRequest(locationRequest: LocationRequest) {
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val client: SettingsClient = LocationServices.getSettingsClient(this)
@@ -138,7 +145,7 @@ class AddEditStationActivity : AppCompatActivity(),
     }
 
     override fun onMessageReceived(message: String) {
-        Toast.makeText(this,message,Toast.LENGTH_LONG).show()
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     override fun onRecordBtnClicked(desc: String) {
@@ -158,11 +165,26 @@ class AddEditStationActivity : AppCompatActivity(),
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_ACCESS_FINE_LOCATION) {
-            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                viewModel.requestGpsSettings()
-            } else {
-                Toast.makeText(this, R.string.msg_use_location_not_allowed, Toast.LENGTH_SHORT).show()
+        when (requestCode) {
+            REQUEST_ACCESS_FINE_LOCATION -> {
+                if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    viewModel.requestGpsSettings()
+                } else {
+                    Toast.makeText(this, R.string.msg_use_location_not_allowed, Toast.LENGTH_SHORT).show()
+                }
+            }
+            REQUEST_ACCESS_RECORD_AUDIO -> {
+                if (grantResults.isNotEmpty()) {
+                    val audioPermission = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    val storagePermission = grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    if (audioPermission && storagePermission) {
+                        viewModel.recordVoice()
+                    } else if (!audioPermission) {
+                        Toast.makeText(this, R.string.msg_audio_record_not_allowed, Toast.LENGTH_SHORT).show()
+                    } else if (!storagePermission) {
+                        Toast.makeText(this, R.string.msg_storage_writing_not_allowed, Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
     }

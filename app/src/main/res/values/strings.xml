@@ -24,5 +24,7 @@
     <string name="longitude">longitude</string>
     <string name="direction">%1$s - %2$s</string>
     <string name="cancel">cancel</string>
+    <string name="msg_storage_writing_not_allowed">You not allowed storage using</string>
+    <string name="msg_audio_record_not_allowed">You not allowed audio recording</string>
 
 </resources>

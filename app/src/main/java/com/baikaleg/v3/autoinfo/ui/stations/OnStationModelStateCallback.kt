@@ -8,6 +8,8 @@ interface OnStationModelStateCallback {
 
     fun onMessageReceived(message: String)
 
+    fun onRecordPermissionRequest()
+
     fun onLocationPermissionRequest()
 
     fun onLocationSettingsRequest(locationRequest: LocationRequest)
