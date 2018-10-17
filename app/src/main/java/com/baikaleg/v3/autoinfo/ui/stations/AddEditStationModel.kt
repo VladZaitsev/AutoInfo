@@ -163,10 +163,6 @@ class AddEditStationModel(application: Application, val route: Route, private va
         }
     }
 
-    fun uploadVoice() {
-
-    }
-
     fun playVoice() {
         if (TextUtils.isEmpty(shortDescription.value)) {
             navigator.onMessageReceived("Please, type the description of  the station")

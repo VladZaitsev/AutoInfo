@@ -19,6 +19,7 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
@@ -30,6 +31,7 @@ import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import kotlinx.android.synthetic.main.activity_add_edit_station.*
 
 @BindingAdapter("app:stations")
 fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
@@ -96,6 +98,8 @@ class AddEditStationActivity : AppCompatActivity(),
         val callback = StationTouchCallback(this, viewModel)
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(binding.recycler)
+
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

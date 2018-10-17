@@ -10,6 +10,8 @@ import android.os.Vibrator
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.util.Log
+import android.view.View
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.ui.stations.AddEditStationModel
 
@@ -17,6 +19,7 @@ open class StationTouchCallback constructor(context: Context, private val callba
     private val background: Drawable
     private val deleteIcon: Drawable?
     private val iconMargin: Int
+    private val itemBackgroundColor: Int
     private val backgroundColor: Int
 
     private var orderChanged = false
@@ -28,7 +31,8 @@ open class StationTouchCallback constructor(context: Context, private val callba
         deleteIcon = ContextCompat.getDrawable(context, R.drawable.ic_delete)
         deleteIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
         iconMargin = context.resources.getDimension(R.dimen.general_margin).toInt()
-        backgroundColor = context.resources.getColor(R.color.colorAccent)
+        itemBackgroundColor = context.resources.getColor(R.color.colorAccent)
+        backgroundColor = context.resources.getColor(R.color.colorBackground)
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?): Int {
@@ -49,17 +53,19 @@ open class StationTouchCallback constructor(context: Context, private val callba
         orderChanged = true
         positionFrom = viewHolder.adapterPosition
         positionTo = target.adapterPosition
-
         return true
     }
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         super.onSelectedChanged(viewHolder, actionState)
-        if (actionState == ItemTouchHelper.ACTION_STATE_IDLE && orderChanged) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_IDLE ) {
             callback.onMoved(positionFrom, positionTo)
             orderChanged = false
             positionFrom = 0
             positionTo = 0
+            deleteIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP)
+        } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+            deleteIcon?.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_ATOP)
         }
     }
 
@@ -71,7 +77,7 @@ open class StationTouchCallback constructor(context: Context, private val callba
         val view = viewHolder.itemView
         val itemHeight = view.bottom - view.top
 
-        (background as ColorDrawable).color = backgroundColor
+        (background as ColorDrawable).color = itemBackgroundColor
         background.setBounds(view.right + dX.toInt(),
                 view.top,
                 view.right,

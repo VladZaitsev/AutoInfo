@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_audio_type_list_titles"
+        android:entryValues="@array/pref_audio_type_list_values"
+        android:key="@string/audio_type_list_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_audio_type" />
+
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/pref_station_type_list_titles"
+        android:entryValues="@array/pref_station_type_list_values"
+        android:key="@string/station_type_list_key"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_station_type" />
+
+</PreferenceScreen>

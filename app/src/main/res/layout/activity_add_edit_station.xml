@@ -57,6 +57,7 @@
                         android:textStyle="bold" />
 
                     <EditText
+                        android:id="@+id/short_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
@@ -164,18 +165,6 @@
                             android:onClick="@{() -> viewmodel.requestAudioRecordPermission()}"
                             android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
                             app:srcCompat="@drawable/ic_mic" />
-
-                        <ImageButton
-                            android:id="@+id/upload_btn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/general_margin"
-                            android:background="@drawable/btn_click"
-                            android:contentDescription="@string/cd_load_file_with_voice"
-                            android:elevation="@dimen/btn_elevation"
-                            android:onClick="@{() -> viewmodel.uploadVoice()}"
-                            android:visibility="@{viewmodel.isTTS() ? View.GONE :  View.VISIBLE, default=gone}"
-                            app:srcCompat="@drawable/ic_file_upload" />
 
                     </LinearLayout>
                 </LinearLayout>

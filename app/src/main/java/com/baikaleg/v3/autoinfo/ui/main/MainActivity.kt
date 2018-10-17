@@ -1,15 +1,19 @@
 package com.baikaleg.v3.autoinfo.ui.main
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
+import com.baikaleg.v3.autoinfo.ui.settings.SettingsActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
@@ -34,7 +38,7 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        //setSupportActionBar(toolbar)
 
         val binding: ActivityMainBinding =
                 DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -45,6 +49,21 @@ class MainActivity : AppCompatActivity(),
         binding.viewmodel = viewModel
         binding.setLifecycleOwner(this)
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item?.itemId == R.id.settings) {
+            val intent = Intent(this, SettingsActivity::class.java)
+            startActivity(intent)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 
     override fun onDestroy() {
         viewModel.cancel()

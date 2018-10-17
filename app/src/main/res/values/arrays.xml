@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_audio_type_list_titles">
+        <item>@string/pref_audio_tts</item>
+        <item>@string/pref_audio_file</item>
+    </string-array>
+
+    <string-array name="pref_audio_type_list_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="pref_station_type_list_titles">
+        <item>@string/pref_station_empty</item>
+        <item>@string/pref_station_current</item>
+        <item>@string/pref_station_with_next</item>
+        <item>@string/pref_station_with_next_with_delay</item>
+    </string-array>
+
+    <string-array name="pref_station_type_list_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+</resources>

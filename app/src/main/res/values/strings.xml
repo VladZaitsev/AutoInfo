@@ -26,5 +26,20 @@
     <string name="cancel">cancel</string>
     <string name="msg_storage_writing_not_allowed">You not allowed storage using</string>
     <string name="msg_audio_record_not_allowed">You not allowed audio recording</string>
+    <string name="title_activity_settings">Settings</string>
 
+    <!-- Strings related to Settings -->
+    <string name="pref_title_audio_type">Type of audio source</string>
+    <string name="pref_title_station_type">Type of stations announcement</string>
+
+    <string name="pref_audio_tts">tts</string>
+    <string name="pref_audio_file">from file</string>
+
+    <string name="station_type_list_key" translatable="false">station_type_list_key</string>
+    <string name="audio_type_list_key" translatable="false">audio_type_list_key</string>
+
+    <string name="pref_station_empty">ANNOUNCE_STATION_TYPE_EMPTY</string>
+    <string name="pref_station_current">ANNOUNCE_STATION_TYPE_CURRENT</string>
+    <string name="pref_station_with_next">ANNOUNCE_STATION_TYPE_NEXT</string>
+    <string name="pref_station_with_next_with_delay">ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY</string>
 </resources>
