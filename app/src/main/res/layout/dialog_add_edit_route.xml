@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.baikaleg.v3.autoinfo.ui.routes.dialog.AddEditRouteViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/route_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@={viewmodel.route.name}" />
+
+        <CheckBox
+            android:id="@+id/route_is_circle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="@{viewmodel.route.isCircle}"
+            android:onCheckedChanged="@{()->viewmodel.isCircleParamChanged()}" />
+    </android.support.constraint.ConstraintLayout>
+</layout>

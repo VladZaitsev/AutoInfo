@@ -9,12 +9,6 @@ import io.reactivex.Single
 @Dao
 interface StationDao {
 
-    @Query("SELECT DISTINCT city FROM stationData")
-    fun getAllCities(): Flowable<List<String>>
-
-    @Query("SELECT route FROM stationData WHERE city = :city")
-    fun getAllRoutesInCity(city: String): Flowable<List<String>>
-
     @Query("SELECT * FROM stationData WHERE route = :route ORDER BY order_number")
     fun getStations(route: String?): Flowable<List<Station>>
 

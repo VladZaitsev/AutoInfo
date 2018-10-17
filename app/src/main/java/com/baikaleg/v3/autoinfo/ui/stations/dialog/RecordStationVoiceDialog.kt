@@ -1,4 +1,4 @@
-package com.baikaleg.v3.autoinfo.ui.dialog
+package com.baikaleg.v3.autoinfo.ui.stations.dialog
 
 import android.app.Activity
 import android.app.AlertDialog

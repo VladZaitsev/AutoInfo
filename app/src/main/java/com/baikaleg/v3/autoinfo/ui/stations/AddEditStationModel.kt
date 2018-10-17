@@ -28,7 +28,6 @@ import java.io.File
  * The ViewModel for [AddEditStationActivity]
  */
 class AddEditStationModel(application: Application, val route: Route, private val navigator: OnStationModelStateCallback) :
-        StationTouchCallback.ItemTouchHelperContract,
         AndroidViewModel(application) {
 
     private lateinit var locationCallback: LocationCallback
@@ -86,7 +85,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
         longitude.postValue("")
     }
 
-    override fun onMoved(fromPosition: Int, toPosition: Int) {
+     fun onMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition > toPosition) {
             val from = stations.value!![fromPosition]
             from.orderNumber = toPosition + 1
@@ -113,7 +112,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
 
     }
 
-    override fun onRemoved(position: Int) {
+    fun onRemoved(position: Int) {
         if (position != stations.value!!.size) {
             for (i in position + 1 until stations.value!!.size) {
                 val s = stations.value!![i]

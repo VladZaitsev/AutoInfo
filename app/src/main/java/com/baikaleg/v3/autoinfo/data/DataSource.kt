@@ -1,6 +1,5 @@
 package com.baikaleg.v3.autoinfo.data
 
-import android.arch.lifecycle.LiveData
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import io.reactivex.Flowable
@@ -15,5 +14,11 @@ interface DataSource {
 
     fun deleteStation(station: Station)
 
-    fun getRoutes(): LiveData<List<Route>>
+    fun getRoutes(): Flowable<List<Route>>
+
+    fun saveRoute(route: Route)
+
+    fun deleteRoute(route: Route)
+
+    fun updateRoute(route: Route)
 }

@@ -4,5 +4,9 @@
     <item
         android:id="@+id/settings"
         app:showAsAction="never"
-        android:title="Settings" />
+        android:title="@string/action_settings" />
+    <item
+        android:id="@+id/routes"
+        app:showAsAction="never"
+        android:title="@string/action_routes"/>
 </menu>

@@ -25,13 +25,12 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
-import com.baikaleg.v3.autoinfo.ui.dialog.RecordStationVoiceDialog
+import com.baikaleg.v3.autoinfo.ui.stations.dialog.RecordStationVoiceDialog
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import kotlinx.android.synthetic.main.activity_add_edit_station.*
 
 @BindingAdapter("app:stations")
 fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
@@ -65,7 +64,7 @@ class AddEditStationActivity : AppCompatActivity(),
         setSupportActionBar(binding.toolbar)
         val actionBar = this.supportActionBar as ActionBar
 
-        route = Route("test", false) //intent.getParcelableExtra<Route>(ROUTE_EXTRA_DATA)
+        route = intent.getParcelableExtra<Route>(ROUTE_EXTRA_DATA)
         stationAdapter = StationViewAdapter(this)
         val modelFactory = AddEditStationModelFactory(application, route, this)
         viewModel = ViewModelProviders

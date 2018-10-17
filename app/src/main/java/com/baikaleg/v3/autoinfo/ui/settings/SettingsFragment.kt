@@ -10,13 +10,14 @@ import com.baikaleg.v3.autoinfo.data.QueryPreferences
 
 class SettingsFragment : PreferenceFragment() {
 
-    private val pref = QueryPreferences(activity)
+    private lateinit var pref: QueryPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         addPreferencesFromResource(R.xml.pref_general)
         setHasOptionsMenu(true)
 
+        pref = QueryPreferences(activity)
         bindPreferenceSummaryToValue(findPreference(getString(R.string.audio_type_list_key)))
         bindPreferenceSummaryToValue(findPreference(getString(R.string.station_type_list_key)))
     }

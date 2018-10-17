@@ -1,13 +1,12 @@
 package com.baikaleg.v3.autoinfo.data
 
-import android.arch.lifecycle.LiveData
 import android.content.Context
 import android.os.AsyncTask
+import com.baikaleg.v3.autoinfo.R.string.station
 import com.baikaleg.v3.autoinfo.data.db.AppDB
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import io.reactivex.Flowable
-import io.reactivex.Single
 
 class Repository private constructor(context: Context) : DataSource {
     private val db: AppDB = AppDB.getInstance(context)
@@ -38,27 +37,52 @@ class Repository private constructor(context: Context) : DataSource {
         updateAsync(station).execute()
     }
 
-    override fun getRoutes(): LiveData<List<Route>> {
+    override fun getRoutes(): Flowable<List<Route>> {
         return db.routeDao().getRoutes()
     }
 
-    private inner class saveAsync(val station: Station) : AsyncTask<Void, Void, Void>() {
+
+    override fun saveRoute(route: Route) {
+        saveAsync(route).execute()
+    }
+
+    override fun deleteRoute(route: Route) {
+        deleteAsync(route).execute()
+    }
+
+    override fun updateRoute(route: Route) {
+        updateAsync(route).execute()
+    }
+
+    private inner class saveAsync<T>(private val entity: T) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void?): Void? {
-            db.stationDao().insertStation(station)
+            if (entity is Route) {
+                db.routeDao().insertRoute(entity)
+            } else if (entity is Station) {
+                db.stationDao().insertStation(entity)
+            }
             return null
         }
     }
 
-    private inner class deleteAsync(val station: Station) : AsyncTask<Void, Void, Void>() {
+    private inner class deleteAsync<T>(private val entity: T) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void?): Void? {
-            db.stationDao().deleteStation(station)
+            if (entity is Route) {
+                db.routeDao().deleteRoute(entity)
+            } else if (entity is Station) {
+                db.stationDao().deleteStation(entity)
+            }
             return null
         }
     }
 
-    private inner class updateAsync(val station: Station) : AsyncTask<Void, Void, Void>() {
+    private inner class updateAsync<T>(private val entity: T) : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void?): Void? {
-            db.stationDao().updateStation(station)
+            if (entity is Route) {
+                db.routeDao().updateRoute(entity)
+            } else if (entity is Station) {
+                db.stationDao().updateStation(entity)
+            }
             return null
         }
     }

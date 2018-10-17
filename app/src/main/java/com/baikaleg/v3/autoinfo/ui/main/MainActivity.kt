@@ -13,8 +13,8 @@ import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
+import com.baikaleg.v3.autoinfo.ui.routes.RouteActivity
 import com.baikaleg.v3.autoinfo.ui.settings.SettingsActivity
-import kotlinx.android.synthetic.main.activity_main.*
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
 
@@ -56,12 +56,19 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.settings) {
-            val intent = Intent(this, SettingsActivity::class.java)
-            startActivity(intent)
-            return true
+        when (item?.itemId) {
+            R.id.settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.routes -> {
+                val intent = Intent(this, RouteActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
-        return super.onOptionsItemSelected(item)
     }
 
 

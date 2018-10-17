@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.baikaleg.v3.autoinfo.ui.routes.route.RouteItemViewModel" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorItemBackground">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_margin="@dimen/general_margin"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{viewmodel.data.name}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</layout>
