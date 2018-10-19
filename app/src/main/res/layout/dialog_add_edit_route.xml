@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -8,21 +9,45 @@
             type="com.baikaleg.v3.autoinfo.ui.routes.dialog.AddEditRouteViewModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
+        <EditText
             android:id="@+id/route_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@={viewmodel.route.name}" />
+            android:layout_margin="@dimen/general_margin"
+            android:hint="@string/route"
+            android:inputType="text"
+            android:text="@={viewmodel.route.name}"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/route_city"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/general_margin"
+            android:hint="@string/city"
+            android:text="@={viewmodel.route.city}"
+            android:inputType="text"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/route_name" />
 
         <CheckBox
             android:id="@+id/route_is_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/general_margin"
             android:checked="@{viewmodel.route.isCircle}"
-            android:onCheckedChanged="@{()->viewmodel.isCircleParamChanged()}" />
+            android:onCheckedChanged="@{()->viewmodel.isCircleParamChanged()}"
+            android:text="@string/is_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/route_city" />
     </android.support.constraint.ConstraintLayout>
 </layout>

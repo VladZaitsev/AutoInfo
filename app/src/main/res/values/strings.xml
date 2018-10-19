@@ -47,4 +47,18 @@
     <string name="action_settings">Settings</string>
     <string name="action_add_route">add route</string>
     <string name="save">Save</string>
+    <string name="route">route</string>
+    <string name="routes">Routes</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Imoprt</string>
+    <string name="export_is_done">Export is done</string>
+    <string name="something_wrong_in_importing">something_wrong in directory creation</string>
+    <string name="something_wrong_in_file_creation">Something wrong in file creation</string>
+    <string name="action_select">Select</string>
+    <string name="change_direction">Change direction</string>
+    <string name="msg_audio_voice_created">Audio voice created</string>
+    <string name="chose_file_imported_route">Choose file</string>
+    <string name="unale_to_wrote_file">unable to write on the sd card</string>
+    <string name="city">city</string>
+    <string name="is_circle">is circle?</string>
 </resources>

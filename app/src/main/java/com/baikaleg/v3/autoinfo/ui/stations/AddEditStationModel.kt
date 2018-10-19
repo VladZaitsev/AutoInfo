@@ -15,12 +15,14 @@ import com.baikaleg.v3.autoinfo.audio.VOICE_PATH
 import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_TTS
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.data.Repository
+import com.baikaleg.v3.autoinfo.data.exportimport.ExportImportRoute
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.service.stationsearch.createLocationRequest
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.google.android.gms.location.*
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 
@@ -36,7 +38,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
 
     private val pref = QueryPreferences(application)
     private val repository = Repository.getInstance(application)
-
+    private val compositeDisposable = CompositeDisposable()
     private var isDirect = true
 
     private var allStations = MutableLiveData<List<Station>>()
@@ -50,10 +52,10 @@ class AddEditStationModel(application: Application, val route: Route, private va
     val latitude = MutableLiveData<String>()
     val shortDescription = MutableLiveData<String>()
 
+    private val exportImportRoute = ExportImportRoute(application)
+
     init {
-        //TODO change
-        isTTS.value = true
-        pref.setAnnounceAudioType(ANNOUNCE_AUDIO_TYPE_TTS)
+        isTTS.value = pref.getAnnounceAudioType() == ANNOUNCE_AUDIO_TYPE_TTS
 
         locationRequest = createLocationRequest(2000)
         locationClient = LocationServices.getFusedLocationProviderClient(application)
@@ -72,20 +74,19 @@ class AddEditStationModel(application: Application, val route: Route, private va
                 }
             }
         }
-        repository.getStations(route.name)
+        compositeDisposable.add(repository.getStations(route.name)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ data: List<Station>? ->
+                .subscribe { data: List<Station>? ->
                     allStations.postValue(data)
                     stations.postValue(data?.filter { station -> station.isDirect == isDirect }?.toMutableList())
                 })
-
         shortDescription.postValue("")
         latitude.postValue("")
         longitude.postValue("")
     }
 
-     fun onMoved(fromPosition: Int, toPosition: Int) {
+    fun onMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition > toPosition) {
             val from = stations.value!![fromPosition]
             from.orderNumber = toPosition + 1
@@ -177,16 +178,23 @@ class AddEditStationModel(application: Application, val route: Route, private va
                     navigator.onMessageReceived("You do not have record")
                 }
             }
-
         }
+    }
+
+    fun selectRoute() {
+        pref.setRoute(route.name)
+    }
+
+    fun exportRoute() {
+        exportImportRoute.exportToFile(route)
     }
 
     fun requestLocationPermission() {
         if (isLocationControlAllowed()) requestGpsSettings()
     }
 
-    fun requestAudioRecordPermission(){
-        if(isRecordVoiceAllowed()) recordVoice()
+    fun requestAudioRecordPermission() {
+        if (isRecordVoiceAllowed()) recordVoice()
     }
 
     fun requestGpsSettings() {
@@ -218,5 +226,11 @@ class AddEditStationModel(application: Application, val route: Route, private va
             }
         }
         return true
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        compositeDisposable.clear()
+        exportImportRoute.clear()
     }
 }

@@ -24,7 +24,7 @@ class AddEditRouteViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun saveRoute() {
-        repository.updateRoute(route.value!!)
+        repository.saveRoute(route.value!!)
     }
 
     fun isCircleParamChanged() {

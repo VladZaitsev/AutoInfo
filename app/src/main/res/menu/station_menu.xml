@@ -4,6 +4,16 @@
     <item
         android:id="@+id/change_direction"
         android:icon="@drawable/ic_swap_vert"
-        app:showAsAction="always"
-        android:title="Change" />
+        app:showAsAction="ifRoom"
+        android:title="@string/change_direction" />
+    <item
+        android:id="@+id/select_route"
+        android:orderInCategory="100"
+        android:title="@string/action_select"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/export_route"
+        android:orderInCategory="100"
+        android:title="@string/action_export"
+        app:showAsAction="never" />
 </menu>

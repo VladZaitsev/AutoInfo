@@ -25,6 +25,7 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
+import com.baikaleg.v3.autoinfo.ui.stations.dialog.ImportRouteDialog
 import com.baikaleg.v3.autoinfo.ui.stations.dialog.RecordStationVoiceDialog
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
@@ -43,8 +44,7 @@ fun setStations(recyclerView: RecyclerView, stations: List<Station>?) {
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
 private const val REQUEST_ACCESS_RECORD_AUDIO = 202
 private const val REQUEST_CHECK_SETTINGS = 203
-
-private const val REQUEST_VOICE_CREATED = 305
+private const val REQUEST_VOICE_CREATED = 204
 
 const val ROUTE_EXTRA_DATA = "route_extra"
 
@@ -109,9 +109,23 @@ class AddEditStationActivity : AppCompatActivity(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        if (item?.itemId == R.id.change_direction) {
-            viewModel.changeDirection()
-            return true
+        when (item?.itemId) {
+            R.id.change_direction -> {
+                viewModel.changeDirection()
+                return true
+            }
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+            R.id.select_route -> {
+                viewModel.selectRoute()
+                return true
+            }
+            R.id.export_route -> {
+                viewModel.exportRoute()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -162,7 +176,7 @@ class AddEditStationActivity : AppCompatActivity(),
             }
         } else if (requestCode == REQUEST_VOICE_CREATED) {
             if (resultCode == Activity.RESULT_OK) {
-
+                Toast.makeText(this, getString(R.string.msg_audio_voice_created), Toast.LENGTH_SHORT).show()
             }
         }
     }
