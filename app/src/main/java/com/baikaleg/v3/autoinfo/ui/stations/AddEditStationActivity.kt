@@ -25,7 +25,6 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
-import com.baikaleg.v3.autoinfo.ui.stations.dialog.ImportRouteDialog
 import com.baikaleg.v3.autoinfo.ui.stations.dialog.RecordStationVoiceDialog
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
@@ -87,7 +86,7 @@ class AddEditStationActivity : AppCompatActivity(),
             }
 
             with(collapsingToolbar) {
-                title = route.name
+                title = route.route
                 setExpandedTitleColor(resources.getColor(android.R.color.transparent))
             }
         }

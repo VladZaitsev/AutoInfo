@@ -20,8 +20,6 @@ import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
 
-
-const val ROUTE_EXTRA = "route_extra"
 const val BROADCAST_ACTION = "com.baikaleg.v3.autoinfo.br"
 const val PARAM_STATUS = "status"
 const val STATUS_STATION = 101
@@ -63,8 +61,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
     init {
         val pref = QueryPreferences(getApplication())
-        //route.postValue(pref.getRoute())
-        route.postValue("test")
+        route.postValue(pref.getRoute())
         if (isServiceRunning()) {
             state.postValue(false)
         } else {
@@ -102,7 +99,6 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
     fun startService() {
         val intent = Intent(getApplication(), StationSearchService::class.java)
-        intent.putExtra(ROUTE_EXTRA, route.value)
         getApplication<Application>().startService(intent)
     }
 
@@ -126,7 +122,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         val services: List<ActivityManager.RunningServiceInfo> = am.getRunningServices(Integer.MAX_VALUE)
 
         for (s in services) {
-            //TODO Change service name
+            //TODO Change service route
             if (s.service.className.equals("com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService")) {
                 return true
             }

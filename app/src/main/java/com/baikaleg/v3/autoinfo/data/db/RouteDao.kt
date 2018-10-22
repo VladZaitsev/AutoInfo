@@ -9,6 +9,12 @@ interface RouteDao {
     @Query("SELECT * FROM routeData")
     fun getRoutes(): Flowable<List<Route>>
 
+    @Query("SELECT * FROM routeData where route = :route")
+    fun getRoute(route: String): Flowable<Route>
+
+    @Query("SELECT * FROM routeData where id = :id")
+    fun getRoute(id: Long): Flowable<Route>
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateRoute(station: Route)
 

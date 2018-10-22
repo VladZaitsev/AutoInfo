@@ -1,21 +1,20 @@
 package com.baikaleg.v3.autoinfo.data.db
 
-import android.arch.persistence.room.Database
-import android.arch.persistence.room.Room
-import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.*
 import android.content.Context
+import com.baikaleg.v3.autoinfo.data.converters.StationsConverter
 import com.baikaleg.v3.autoinfo.data.model.Route
-import com.baikaleg.v3.autoinfo.data.model.Station
 
-@Database(entities = arrayOf(Station::class, Route::class), version = 1, exportSchema = false)
+
+private const val DATABASE_NAME = "autoinfo.db"
+
+@Database(entities = [Route::class], version = 1, exportSchema = false)
+@TypeConverters(StationsConverter::class)
 abstract class AppDB : RoomDatabase() {
-
-    abstract fun stationDao(): StationDao
 
     abstract fun routeDao(): RouteDao
 
     companion object {
-        private val DATABASE_NAME = "autoinfo.db"
         @Volatile private var instance: AppDB? = null
 
         fun getInstance(context: Context): AppDB {

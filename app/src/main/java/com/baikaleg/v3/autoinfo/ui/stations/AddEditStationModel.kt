@@ -19,7 +19,6 @@ import com.baikaleg.v3.autoinfo.data.exportimport.ExportImportRoute
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.service.stationsearch.createLocationRequest
-import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.google.android.gms.location.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -41,7 +40,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
     private val compositeDisposable = CompositeDisposable()
     private var isDirect = true
 
-    private var allStations = MutableLiveData<List<Station>>()
+    private var allStations = mutableListOf<Station>()
     var stations = MutableLiveData<MutableList<Station>>()
     val isTTS = MutableLiveData<Boolean>()
     val isLocationSearch = MutableLiveData<Boolean>()
@@ -74,54 +73,53 @@ class AddEditStationModel(application: Application, val route: Route, private va
                 }
             }
         }
-        compositeDisposable.add(repository.getStations(route.name)
+        compositeDisposable.add(repository.getRoute(route.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { data: List<Station>? ->
-                    allStations.postValue(data)
-                    stations.postValue(data?.filter { station -> station.isDirect == isDirect }?.toMutableList())
+                .subscribe { it: Route ->
+                    allStations.clear()
+                    allStations.addAll(it.stations)
+                    stations.postValue(allStations.asSequence()
+                            .filter { station -> station.isDirect == isDirect }
+                            .sortedBy { station -> station.id }
+                            .toMutableList())
+
+                    latitude.value = ""
+                    longitude.value = ""
+                    shortDescription.value = ""
                 })
+
         shortDescription.postValue("")
         latitude.postValue("")
         longitude.postValue("")
     }
 
     fun onMoved(fromPosition: Int, toPosition: Int) {
-        if (fromPosition > toPosition) {
-            val from = stations.value!![fromPosition]
-            from.orderNumber = toPosition + 1
-
-            stations.value!!.removeAt(fromPosition)
-            for (i in toPosition + 1..stations.value!!.size) {
-                val ss = stations.value!![i - 1]
-                ss.orderNumber = i + 1
-                repository.updateStation(ss)
+        if (fromPosition != toPosition) {
+            stations.value!![fromPosition].id = toPosition
+            if (fromPosition > toPosition) {
+                for (i in toPosition until fromPosition) {
+                    stations.value!![i].id = i + 1
+                }
+            } else {
+                for (i in fromPosition + 1..toPosition) {
+                    stations.value!![i].id = i - 1
+                }
             }
-            repository.updateStation(from)
-        } else {
-            val from = stations.value!![fromPosition]
-            from.orderNumber = toPosition + 1
-
-            stations.value!!.removeAt(fromPosition)
-            for (i in fromPosition until toPosition) {
-                val ss = stations.value!![i]
-                ss.orderNumber = i + 1
-                repository.updateStation(ss)
-            }
-            repository.updateStation(from)
+            route.stations = stations.value!!
+            repository.updateRoute(route)
         }
-
     }
 
     fun onRemoved(position: Int) {
         if (position != stations.value!!.size) {
-            for (i in position + 1 until stations.value!!.size) {
-                val s = stations.value!![i]
-                s.orderNumber = i
-                repository.updateStation(s)
+            for (i in position until stations.value!!.size) {
+                stations.value!![i].id = i - 1
             }
+            stations.value!!.removeAt(position)
         }
-        repository.deleteStation(stations.value!![position])
+        route.stations = stations.value!!
+        repository.updateRoute(route)
     }
 
     fun setStation(station: Station) {
@@ -133,7 +131,10 @@ class AddEditStationModel(application: Application, val route: Route, private va
     fun changeDirection() {
         if (!route.isCircle) {
             isDirect = !isDirect
-            stations.value = allStations.value?.filter { station -> station.isDirect == isDirect }?.toMutableList()
+            stations.value = allStations.asSequence()
+                    .filter { station -> station.isDirect == isDirect }
+                    .sortedBy { station -> station.id }
+                    .toMutableList()
         }
     }
 
@@ -143,13 +144,13 @@ class AddEditStationModel(application: Application, val route: Route, private va
             TextUtils.isEmpty(latitude.value) -> navigator.onMessageReceived("Please, type the latitude of the station")
             TextUtils.isEmpty(longitude.value) -> navigator.onMessageReceived("Please, type the longitude of the station")
             else -> {
-                val station = Station(route.name, shortDescription.value!!, latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
-                station.orderNumber = stations.value?.size!! + 1
+                val station = Station(stations.value?.size!!, shortDescription.value!!, "", latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
                 if (stations.value?.contains(station)!!) {
                     navigator.onMessageReceived("You also have this station")
                 } else {
-                    stations.value?.add(station)
-                    repository.saveStation(station)
+                    allStations.add(station)
+                    route.stations = allStations
+                    repository.updateRoute(route)
                 }
             }
         }
@@ -182,7 +183,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
     }
 
     fun selectRoute() {
-        pref.setRoute(route.name)
+        pref.setRoute(route.route)
     }
 
     fun exportRoute() {

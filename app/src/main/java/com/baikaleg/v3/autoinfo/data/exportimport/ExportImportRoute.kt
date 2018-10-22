@@ -18,25 +18,60 @@ import java.io.*
 const val DATA_PATH = "/AutoInfo/data/"
 
 private const val ROUTE = "route"
-private const val SHORT_DESCRIPTION = "short_description"
-private const val LATITUDE = "latitude"
-private const val LONGITUDE = "longitude"
-private const val IS_DIRECT = "is_direct"
-private const val ORDER_NUMBER = "order_number"
 private const val CITY = "city"
-private const val DESCRIPTION = "description"
+private const val IS_CIRCLE = "is_circle"
+private const val STATIONS = "stations"
+
+const val ORDER_NUMBER = "order_number"
+const val DESCRIPTION = "description"
+const val SHORT_DESCRIPTION = "short_description"
+const val LATITUDE = "latitude"
+const val LONGITUDE = "longitude"
+const val IS_DIRECT = "is_direct"
+
+fun stationsToJSON(stations: List<Station>): JSONArray {
+    val array = JSONArray()
+    for (s in stations) {
+        val o = JSONObject()
+        o.put(ORDER_NUMBER, s.id)
+        o.put(DESCRIPTION, s.description)
+        o.put(SHORT_DESCRIPTION, s.shortDescription)
+        o.put(LATITUDE, s.latitude)
+        o.put(LONGITUDE, s.longitude)
+        o.put(IS_DIRECT, s.isDirect)
+        array.put(o)
+    }
+    return array
+}
+
+fun jsonArrayToStations(body: String): List<Station> {
+    val stations = mutableListOf<Station>()
+    val array = JSONArray(body)
+    for (i in 0 until (array.length())) {
+        val jsonObject = array.getJSONObject(i)
+        val station = Station(
+                jsonObject.getInt(ORDER_NUMBER),
+                jsonObject.getString(SHORT_DESCRIPTION),
+                jsonObject.getString(DESCRIPTION),
+                jsonObject.getDouble(LATITUDE),
+                jsonObject.getDouble(LONGITUDE),
+                jsonObject.getBoolean(IS_DIRECT)
+        )
+        stations.add(station)
+    }
+    return stations
+}
 
 class ExportImportRoute(val context: Context) {
     private val repository: Repository = Repository.getInstance(context)
     private val compositeDisposable = CompositeDisposable()
 
     fun exportToFile(route: Route) {
-        compositeDisposable.add(repository.getStations(route.name)
+        compositeDisposable.add(repository.getRoute(route.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { data: List<Station> ->
-                    writeToFile("${route.name}_${route.city}", convertToJSON(data))
-                })
+                .subscribe { data: Route -> writeToFile("${route.route}_${route.city}", routeToJSON(data).toString()) }
+        )
     }
 
     fun importFromFile(fileName: String) {
@@ -45,57 +80,24 @@ class ExportImportRoute(val context: Context) {
             Toast.makeText(context, context.getString(R.string.something_wrong_in_importing), Toast.LENGTH_SHORT).show()
             return
         }
-        val stations = convertToStations(body)
-        var isCircle = false
-        for (station in stations) {
-            repository.saveStation(station)
-            if (!station.isDirect && !isCircle) {
-                isCircle = true
-            }
-        }
-
-        val route = Route(
-                fileName.split("_")[0],
-                isCircle,
-                fileName.split("_")[1])
-        repository.saveRoute(route)
+        repository.saveRoute(jsonArrayToRoute(body))
     }
 
-    private fun convertToJSON(list: List<Station>): String {
-        val array = JSONArray()
-        for (s in list) {
-            val o = JSONObject()
-            o.put(ROUTE, s.route)
-            o.put(SHORT_DESCRIPTION, s.shortDescription)
-            o.put(LATITUDE, s.latitude)
-            o.put(LONGITUDE, s.longitude)
-            o.put(IS_DIRECT, s.isDirect)
-            o.put(ORDER_NUMBER, s.orderNumber)
-            o.put(CITY, s.city)
-            o.put(DESCRIPTION, s.description)
-            array.put(o)
-        }
-        return array.toString()
+    private fun jsonArrayToRoute(body: String): Route {
+        val mainObject = JSONObject(body)
+        return Route(mainObject.getString(ROUTE),
+                mainObject.getBoolean(IS_CIRCLE),
+                mainObject.getString(CITY),
+                jsonArrayToStations(mainObject.getString(STATIONS)))
     }
 
-    private fun convertToStations(body: String): List<Station> {
-        val list = mutableListOf<Station>()
-        val array = JSONArray(body)
-        for (i in 0 until (array.length())) {
-            val jsonObject = array.getJSONObject(i)
-            val station = Station(
-                    jsonObject.getString(ROUTE),
-                    jsonObject.getString(SHORT_DESCRIPTION),
-                    jsonObject.getDouble(LATITUDE),
-                    jsonObject.getDouble(LONGITUDE),
-                    jsonObject.getBoolean(IS_DIRECT)
-            )
-            station.orderNumber = jsonObject.getInt(ORDER_NUMBER)
-            station.city = jsonObject.getString(CITY)
-            station.description = jsonObject.getString(DESCRIPTION)
-            list.add(station)
-        }
-        return list
+    private fun routeToJSON(route: Route): JSONObject {
+        val mainObject = JSONObject()
+        mainObject.put(ROUTE, route.route)
+        mainObject.put(CITY, route.city)
+        mainObject.put(IS_CIRCLE, route.isCircle)
+        mainObject.put(STATIONS, stationsToJSON(route.stations))
+        return mainObject
     }
 
     private fun writeToFile(fileName: String, body: String) {
@@ -138,7 +140,7 @@ class ExportImportRoute(val context: Context) {
         return builder.toString()
     }
 
-    fun clear(){
+    fun clear() {
         compositeDisposable.clear()
     }
 }

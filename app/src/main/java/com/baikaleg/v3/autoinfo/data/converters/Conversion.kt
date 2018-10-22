@@ -1,4 +1,4 @@
-package com.baikaleg.v3.autoinfo.data
+package com.baikaleg.v3.autoinfo.data.converters
 
 import android.databinding.InverseMethod
 import android.text.TextUtils

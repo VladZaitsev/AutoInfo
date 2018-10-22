@@ -1,25 +1,44 @@
 package com.baikaleg.v3.autoinfo.data.model
 
-import android.arch.persistence.room.ColumnInfo
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import android.os.Parcel
+import android.os.Parcelable
 
-@Entity(tableName = "stationData")
-data class Station(@ColumnInfo(name = "route") var route: String,
-                   @ColumnInfo(name = "short_description") var shortDescription: String,
-                   @ColumnInfo(name = "latitude") var latitude: Double,
-                   @ColumnInfo(name = "longitude") var longitude: Double,
-                   @ColumnInfo(name = "is_direct") var isDirect: Boolean) {
-    @ColumnInfo(name = "id")
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+data class Station(var id: Int = 0,
+                   var shortDescription: String,
+                   var description: String,
+                   var latitude: Double,
+                   var longitude: Double,
+                   var isDirect: Boolean): Parcelable {
 
-    @ColumnInfo(name = "order_number")
-    var orderNumber: Int = 0
+    constructor(parcel: Parcel) : this(
+            parcel.readInt(),
+            parcel.readString(),
+            parcel.readString(),
+            parcel.readDouble(),
+            parcel.readDouble(),
+            parcel.readByte() != 0.toByte()) {
+    }
 
-    @ColumnInfo(name = "city")
-    var city: String = ""
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
+        parcel.writeString(shortDescription)
+        parcel.writeString(description)
+        parcel.writeDouble(latitude)
+        parcel.writeDouble(longitude)
+        parcel.writeByte(if (isDirect) 1 else 0)
+    }
 
-    @ColumnInfo(name = "description")
-    var description: String = ""
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Station> {
+        override fun createFromParcel(parcel: Parcel): Station {
+            return Station(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Station?> {
+            return arrayOfNulls(size)
+        }
+    }
 }

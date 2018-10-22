@@ -12,7 +12,7 @@ class AddEditRouteViewModel(application: Application) : AndroidViewModel(applica
     private val repository = Repository.getInstance(application)
 
     init {
-        route.postValue(Route("", false, ""))
+        route.postValue(Route("", false, "", listOf()))
     }
 
     fun setRoute(route: Route) {

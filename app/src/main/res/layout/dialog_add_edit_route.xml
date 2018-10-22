@@ -20,7 +20,7 @@
             android:layout_margin="@dimen/general_margin"
             android:hint="@string/route"
             android:inputType="text"
-            android:text="@={viewmodel.route.name}"
+            android:text="@={viewmodel.route.route}"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

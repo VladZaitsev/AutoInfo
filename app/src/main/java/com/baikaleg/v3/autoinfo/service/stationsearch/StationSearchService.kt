@@ -13,8 +13,10 @@ import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.ui.main.*
 import com.baikaleg.v3.autoinfo.audio.AudioController
 import com.baikaleg.v3.autoinfo.data.*
+import com.baikaleg.v3.autoinfo.data.model.Route
 import com.google.android.gms.location.*
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 fun createLocationRequest(time: Long): LocationRequest {
@@ -49,6 +51,8 @@ class StationSearchService : Service() {
     private lateinit var locationCallback: LocationCallback
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private val compositeDisposable = CompositeDisposable()
+
     interface OnStationStateChanged {
         fun announceCurrentStation(station: Station)
         fun announceNextStation(station: Station)
@@ -69,12 +73,11 @@ class StationSearchService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-
-        val route: String = intent!!.getStringExtra(ROUTE_EXTRA)
-        repository.getStations(route)
+        val pref = QueryPreferences(getApplication())
+        compositeDisposable.add(repository.getRoute(pref.getRoute())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ data: List<Station>? -> fullStationsList = data!! })
+                .subscribe { data: Route -> fullStationsList = data.stations })
 
         startLocationUpdates()
 
@@ -95,6 +98,7 @@ class StationSearchService : Service() {
     override fun onDestroy() {
         stopLocationUpdates()
         super.onDestroy()
+        compositeDisposable.clear()
     }
 
     @SuppressWarnings("MissingPermission")

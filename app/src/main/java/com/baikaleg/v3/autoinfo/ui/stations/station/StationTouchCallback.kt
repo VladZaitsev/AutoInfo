@@ -58,7 +58,7 @@ open class StationTouchCallback constructor(context: Context, private val callba
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         super.onSelectedChanged(viewHolder, actionState)
-        if (actionState == ItemTouchHelper.ACTION_STATE_IDLE ) {
+        if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
             callback.onMoved(positionFrom, positionTo)
             orderChanged = false
             positionFrom = 0

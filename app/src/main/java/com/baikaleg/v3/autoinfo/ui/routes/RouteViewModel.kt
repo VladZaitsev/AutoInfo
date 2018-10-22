@@ -6,7 +6,6 @@ import android.arch.lifecycle.MutableLiveData
 import com.baikaleg.v3.autoinfo.data.Repository
 import com.baikaleg.v3.autoinfo.data.exportimport.ExportImportRoute
 import com.baikaleg.v3.autoinfo.data.model.Route
-import com.baikaleg.v3.autoinfo.data.model.Station
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -33,15 +32,6 @@ class RouteViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun onRemove(position: Int) {
-        val route = routes.value!![position].name
-        compositeDisposable.add(repository.getStations(route)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { stations: List<Station> ->
-                    for (station in stations) {
-                        repository.deleteStation(station)
-                    }
-                })
         repository.deleteRoute(routes.value!![position])
     }
 
