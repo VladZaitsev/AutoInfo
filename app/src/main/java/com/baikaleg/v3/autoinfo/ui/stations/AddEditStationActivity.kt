@@ -2,13 +2,13 @@ package com.baikaleg.v3.autoinfo.ui.stations
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
-import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.ActionBar
@@ -18,13 +18,13 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.data.model.Station
 import com.baikaleg.v3.autoinfo.databinding.ActivityAddEditStationBinding
+import com.baikaleg.v3.autoinfo.ui.MarginItemDecoration
 import com.baikaleg.v3.autoinfo.ui.stations.dialog.RecordStationVoiceDialog
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationTouchCallback
 import com.baikaleg.v3.autoinfo.ui.stations.station.StationViewAdapter
@@ -52,18 +52,18 @@ class AddEditStationActivity : AppCompatActivity(),
         OnStationModelStateCallback,
         ActivityCompat.OnRequestPermissionsResultCallback {
 
+    private lateinit var binding: ActivityAddEditStationBinding
     private lateinit var viewModel: AddEditStationModel
     private lateinit var route: Route
     private lateinit var stationAdapter: StationViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivityAddEditStationBinding = DataBindingUtil.setContentView(
-                this, R.layout.activity_add_edit_station)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_edit_station)
         setSupportActionBar(binding.toolbar)
         val actionBar = this.supportActionBar as ActionBar
 
-        route = intent.getParcelableExtra<Route>(ROUTE_EXTRA_DATA)
+        route = intent.getParcelableExtra(ROUTE_EXTRA_DATA)
         stationAdapter = StationViewAdapter(this)
         val modelFactory = AddEditStationModelFactory(application, route, this)
         viewModel = ViewModelProviders
@@ -131,6 +131,7 @@ class AddEditStationActivity : AppCompatActivity(),
 
     override fun onClick(station: Station) {
         viewModel.setStation(station)
+        binding.appbar.setExpanded(true)
     }
 
     override fun onLocationPermissionRequest() {
@@ -158,6 +159,15 @@ class AddEditStationActivity : AppCompatActivity(),
                 }
             }
         }
+    }
+
+    override fun onStationChangedRequest(index: Int, station: Station) {
+        val dialog = AlertDialog.Builder(this)
+        dialog.setTitle(getString(R.string.change_station_request, station.shortDescription))
+        dialog.setPositiveButton(getString(android.R.string.yes)) { _, _ -> viewModel.changeStation(index, station) }
+        dialog.setNegativeButton(getString(android.R.string.cancel), null)
+        dialog.create()
+        dialog.show()
     }
 
     override fun onMessageReceived(message: String) {
@@ -205,17 +215,4 @@ class AddEditStationActivity : AppCompatActivity(),
         }
     }
 
-    class MarginItemDecoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
-        override fun getItemOffsets(outRect: Rect, view: View,
-                                    parent: RecyclerView, state: RecyclerView.State) {
-            with(outRect) {
-                if (parent.getChildAdapterPosition(view) == 0) {
-                    top = spaceHeight
-                }
-                left = spaceHeight
-                right = spaceHeight
-                bottom = spaceHeight
-            }
-        }
-    }
 }

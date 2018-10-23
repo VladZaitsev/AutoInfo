@@ -18,14 +18,14 @@
     <string name="cd_play_voice">play voice</string>
     <string name="cd_detect_current_location">detect current location</string>
     <string name="cd_start_stop_btn">Press this button for stop or start trip</string>
+    <string name="cd_refresh">Refresh</string>
 
     <string name="station">station</string>
     <string name="latitude">latitude</string>
     <string name="longitude">longitude</string>
     <string name="direction">%1$s - %2$s</string>
     <string name="cancel">cancel</string>
-    <string name="msg_storage_writing_not_allowed">You not allowed storage using</string>
-    <string name="msg_audio_record_not_allowed">You not allowed audio recording</string>
+
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -43,6 +43,15 @@
     <string name="pref_station_with_next">ANNOUNCE_STATION_TYPE_NEXT</string>
     <string name="pref_station_with_next_with_delay">ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY</string>
 
+    <!-- Messages -->
+    <string name="msg_storage_writing_not_allowed">You not allowed storage using</string>
+    <string name="msg_audio_record_not_allowed">You not allowed audio recording</string>
+    <string name="msg_enter_description">Please, type the description of the station</string>
+    <string name="msg_enter_latitude">Please, type the latitude of the station</string>
+    <string name="msg_enter_longitude">Please, type the longitude of the station</string>
+    <string name="msg_you_also_have_this_station">You also have this station</string>
+    <string name="msg_you_donnot_have_record">You do not have record</string>
+
     <string name="action_routes">Routes</string>
     <string name="action_settings">Settings</string>
     <string name="action_add_route">add route</string>
@@ -58,7 +67,10 @@
     <string name="change_direction">Change direction</string>
     <string name="msg_audio_voice_created">Audio voice created</string>
     <string name="chose_file_imported_route">Choose file</string>
-    <string name="unale_to_wrote_file">unable to write on the sd card</string>
+    <string name="unable_to_wrote_file">unable to write on the sd card</string>
     <string name="city">city</string>
     <string name="is_circle">is circle?</string>
+    <string name="route_is_not_selected">Route is not selected</string>
+    <string name="change_station_request">Do you really want to change station %1$s?</string>
+
 </resources>

@@ -16,6 +16,7 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.exportimport.ExportImportRoute
 import com.baikaleg.v3.autoinfo.data.model.Route
 import com.baikaleg.v3.autoinfo.databinding.ActivityRouteBinding
+import com.baikaleg.v3.autoinfo.ui.MarginItemDecoration
 import com.baikaleg.v3.autoinfo.ui.routes.dialog.AddEditRouteDialog
 import com.baikaleg.v3.autoinfo.ui.routes.route.RouteTouchCallback
 import com.baikaleg.v3.autoinfo.ui.routes.route.RouteViewAdapter
@@ -58,15 +59,17 @@ class RouteActivity : AppCompatActivity(),
             setLifecycleOwner(this@RouteActivity)
             viewmodel = viewModel
 
-            with(routes) {
+            with(recycler) {
                 layoutManager = LinearLayoutManager(this@RouteActivity)
                 adapter = routesAdapter
+                addItemDecoration(MarginItemDecoration(
+                        resources.getDimension(R.dimen.general_margin).toInt()))
             }
         }
 
         val callback = RouteTouchCallback(this, viewModel)
         val itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper.attachToRecyclerView(binding.routes)
+        itemTouchHelper.attachToRecyclerView(binding.recycler)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

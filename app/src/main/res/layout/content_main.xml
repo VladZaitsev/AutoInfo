@@ -34,7 +34,7 @@
             android:background="@{viewmodel.state ? @drawable/btn_start : @drawable/btn_stop, default=@drawable/btn_start}"
             android:contentDescription="@string/cd_start_stop_btn"
             android:elevation="10dp"
-            android:onClick="@{viewmodel::onMainBtnClick}"
+            android:onClick="@{()->viewmodel.onStartBtnClick()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

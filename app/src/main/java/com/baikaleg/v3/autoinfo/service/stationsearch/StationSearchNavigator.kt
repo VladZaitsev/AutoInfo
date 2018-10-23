@@ -4,6 +4,10 @@ interface StationSearchNavigator {
 
     fun onLocationPermissionRequest()
 
-    fun onMessageReceived(msg:String)
+    fun onMessageReceived(msg: String)
+
+    fun onLocationSettingsRequest()
+
+    fun isGooglePlayServicesAvailable(): Boolean
 
 }

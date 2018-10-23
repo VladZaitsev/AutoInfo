@@ -18,7 +18,7 @@ class StationViewAdapter(private val navigator: StationClickNavigator) : Recycle
         val viewModel = StationItemViewModel(stations[position])
         holder.binding.viewmodel = viewModel
 
-        holder.binding.root.setOnClickListener { v -> navigator.onClick(stations.get(position)) }
+        holder.binding.root.setOnClickListener { _ -> navigator.onClick(stations[position]) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StationViewHolder {

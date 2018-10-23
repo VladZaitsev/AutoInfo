@@ -15,7 +15,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
@@ -36,9 +35,11 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
     private lateinit var navigator: StationSearchNavigator
 
+    private val pref = QueryPreferences(getApplication())
     private val state = MutableLiveData<Boolean>()
     private val route = MutableLiveData<String>()
     private val station = MutableLiveData<String>()
+
 
     fun getState(): LiveData<Boolean> {
         return state
@@ -60,8 +61,6 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
     }
 
     init {
-        val pref = QueryPreferences(getApplication())
-        route.postValue(pref.getRoute())
         if (isServiceRunning()) {
             state.postValue(false)
         } else {
@@ -77,16 +76,30 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun onMainBtnClick(view: View) {
-        if (isLocationControlAllowed()) {
+    fun refreshUI() {
+        route.postValue(pref.getRoute())
+    }
+
+    fun onStartBtnClick() {
+        if (navigator.isGooglePlayServicesAvailable()) {
             if (state.value == true) {
-                state.postValue(false)
-                startService()
+                if (isLocationControlAllowed()) {
+                    checkLocationSettings()
+                }
             } else {
                 state.postValue(true)
                 stopService()
             }
         }
+    }
+
+    fun checkLocationSettings() {
+        navigator.onLocationSettingsRequest()
+    }
+
+    fun runService() {
+        state.postValue(false)
+        startService()
     }
 
     fun cancel() {
@@ -97,7 +110,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         navigator = nav
     }
 
-    fun startService() {
+    private fun startService() {
         val intent = Intent(getApplication(), StationSearchService::class.java)
         getApplication<Application>().startService(intent)
     }
@@ -128,9 +141,5 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
             }
         }
         return false
-    }
-
-    private fun checkGps() {
-//TODO Here realize gps check
     }
 }

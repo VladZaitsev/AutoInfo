@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
+import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.audio.AudioController
 import com.baikaleg.v3.autoinfo.audio.VOICE_PATH
 import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_TTS
@@ -25,6 +26,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 
+//TODO Implement description
+
 /**
  * The ViewModel for [AddEditStationActivity]
  */
@@ -38,13 +41,15 @@ class AddEditStationModel(application: Application, val route: Route, private va
     private val pref = QueryPreferences(application)
     private val repository = Repository.getInstance(application)
     private val compositeDisposable = CompositeDisposable()
-    private var isDirect = true
+    private val audio = AudioController(getApplication())
 
+    private var isDirect = true
+    private var selectedStation: Station? = null
     private var allStations = mutableListOf<Station>()
     var stations = MutableLiveData<MutableList<Station>>()
     val isTTS = MutableLiveData<Boolean>()
     val isLocationSearch = MutableLiveData<Boolean>()
-    val audio = AudioController(getApplication())
+    val isStationNew = MutableLiveData<Boolean>()
 
     //fields
     val longitude = MutableLiveData<String>()
@@ -55,6 +60,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
 
     init {
         isTTS.value = pref.getAnnounceAudioType() == ANNOUNCE_AUDIO_TYPE_TTS
+        isStationNew.value = true
 
         locationRequest = createLocationRequest(2000)
         locationClient = LocationServices.getFusedLocationProviderClient(application)
@@ -83,30 +89,26 @@ class AddEditStationModel(application: Application, val route: Route, private va
                             .filter { station -> station.isDirect == isDirect }
                             .sortedBy { station -> station.id }
                             .toMutableList())
-
-                    latitude.value = ""
-                    longitude.value = ""
-                    shortDescription.value = ""
+                    refresh()
                 })
-
-        shortDescription.postValue("")
-        latitude.postValue("")
-        longitude.postValue("")
     }
 
     fun onMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition != toPosition) {
-            stations.value!![fromPosition].id = toPosition
+            var index = allStations.indexOf(stations.value!![fromPosition])
+            allStations[index].id = toPosition + 1
             if (fromPosition > toPosition) {
                 for (i in toPosition until fromPosition) {
-                    stations.value!![i].id = i + 1
+                    index = allStations.indexOf(stations.value!![i])
+                    allStations[index].id = allStations[index].id + 1
                 }
             } else {
                 for (i in fromPosition + 1..toPosition) {
-                    stations.value!![i].id = i - 1
+                    index = allStations.indexOf(stations.value!![i])
+                    allStations[index].id = allStations[index].id - 1
                 }
             }
-            route.stations = stations.value!!
+            route.stations = allStations
             repository.updateRoute(route)
         }
     }
@@ -114,15 +116,19 @@ class AddEditStationModel(application: Application, val route: Route, private va
     fun onRemoved(position: Int) {
         if (position != stations.value!!.size) {
             for (i in position until stations.value!!.size) {
-                stations.value!![i].id = i - 1
+                val index = allStations.indexOf(stations.value!![i])
+                allStations[index].id = allStations[index].id - 1
             }
-            stations.value!!.removeAt(position)
+            val index = allStations.indexOf(stations.value!![position])
+            allStations.removeAt(index)
         }
-        route.stations = stations.value!!
+        route.stations = allStations
         repository.updateRoute(route)
     }
 
     fun setStation(station: Station) {
+        selectedStation = station
+        isStationNew.value = false
         latitude.value = station.latitude.toString()
         longitude.value = station.longitude.toString()
         shortDescription.value = station.shortDescription
@@ -138,35 +144,48 @@ class AddEditStationModel(application: Application, val route: Route, private va
         }
     }
 
-    fun saveStation() {
+    fun onSaveBtnClick() {
         when {
-            TextUtils.isEmpty(shortDescription.value) -> navigator.onMessageReceived("Please, type the description of the station")
-            TextUtils.isEmpty(latitude.value) -> navigator.onMessageReceived("Please, type the latitude of the station")
-            TextUtils.isEmpty(longitude.value) -> navigator.onMessageReceived("Please, type the longitude of the station")
+            TextUtils.isEmpty(shortDescription.value) -> navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_enter_description))
+            TextUtils.isEmpty(latitude.value) -> navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_enter_latitude))
+            TextUtils.isEmpty(longitude.value) -> navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_enter_longitude))
             else -> {
-                val station = Station(stations.value?.size!!, shortDescription.value!!, "", latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
-                if (stations.value?.contains(station)!!) {
-                    navigator.onMessageReceived("You also have this station")
+                if (isStationNew.value!!) {
+                    val newStation = Station(stations.value?.size!! + 1, shortDescription.value!!, "", latitude.value!!.toDouble(), longitude.value!!.toDouble(), isDirect)
+                    if (stations.value?.contains(newStation)!!) {
+                        navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_you_also_have_this_station))
+                    }
+                    allStations.add(newStation)
+                    saveStation()
                 } else {
-                    allStations.add(station)
-                    route.stations = allStations
-                    repository.updateRoute(route)
+                    val index = allStations.indexOf(selectedStation)
+                    selectedStation?.description = ""
+                    selectedStation?.shortDescription = shortDescription.value!!
+                    selectedStation?.latitude = latitude.value!!.toDouble()
+                    selectedStation?.longitude = longitude.value!!.toDouble()
+                    selectedStation?.isDirect = isDirect
+
+                    navigator.onStationChangedRequest(index, selectedStation!!)
                 }
             }
         }
     }
 
-    fun recordVoice() {
-        if (TextUtils.isEmpty(shortDescription.value)) {
-            navigator.onMessageReceived("Please, type the description of the station")
-        } else {
-            navigator.onRecordBtnClicked(shortDescription.value!!)
-        }
+    fun onRequestLocationPermissionBtnClick() {
+        if (isLocationControlAllowed()) requestGpsSettings()
     }
 
-    fun playVoice() {
+    fun onRequestAudioRecordPermissionBtnClick() {
+        if (isRecordVoiceAllowed()) recordVoice()
+    }
+
+    fun onRefreshBtnClick() {
+        refresh()
+    }
+
+    fun onPlayVoiceBtnClick() {
         if (TextUtils.isEmpty(shortDescription.value)) {
-            navigator.onMessageReceived("Please, type the description of  the station")
+            navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_enter_description))
         } else {
             if (isTTS.value!!) {
                 audio.announceStation(shortDescription.value, 0)
@@ -176,9 +195,22 @@ class AddEditStationModel(application: Application, val route: Route, private va
                 if (file.exists()) {
                     audio.announceStation(shortDescription.value, 0)
                 } else {
-                    navigator.onMessageReceived("You do not have record")
+                    navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_you_donnot_have_record))
                 }
             }
+        }
+    }
+
+    fun changeStation(index: Int, station: Station) {
+        allStations[index] = station
+        saveStation()
+    }
+
+    fun recordVoice() {
+        if (TextUtils.isEmpty(shortDescription.value)) {
+            navigator.onMessageReceived(getApplication<Application>().getString(R.string.msg_enter_description))
+        } else {
+            navigator.onRecordBtnClicked(shortDescription.value!!)
         }
     }
 
@@ -190,14 +222,6 @@ class AddEditStationModel(application: Application, val route: Route, private va
         exportImportRoute.exportToFile(route)
     }
 
-    fun requestLocationPermission() {
-        if (isLocationControlAllowed()) requestGpsSettings()
-    }
-
-    fun requestAudioRecordPermission() {
-        if (isRecordVoiceAllowed()) recordVoice()
-    }
-
     fun requestGpsSettings() {
         navigator.onLocationSettingsRequest(locationRequest)
     }
@@ -206,6 +230,20 @@ class AddEditStationModel(application: Application, val route: Route, private va
     fun findLocation() {
         isLocationSearch.value = true
         locationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+    }
+
+
+    private fun refresh() {
+        latitude.value = ""
+        longitude.value = ""
+        shortDescription.value = ""
+        isStationNew.value = true
+        selectedStation = null
+    }
+
+    private fun saveStation() {
+        route.stations = allStations
+        repository.updateRoute(route)
     }
 
     private fun isLocationControlAllowed(): Boolean {

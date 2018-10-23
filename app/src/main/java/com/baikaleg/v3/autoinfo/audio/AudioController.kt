@@ -18,7 +18,6 @@ import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_PLAYER
 import com.baikaleg.v3.autoinfo.data.ANNOUNCE_AUDIO_TYPE_TTS
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
-import com.baikaleg.v3.autoinfo.data.model.Station
 import java.util.*
 
 const val VOICE_PATH = "/AutoInfo/voice/"
@@ -54,13 +53,13 @@ class AudioController(private val context: Context) :
                     .setOnAudioFocusChangeListener(this)
                     .build()
         }
-        //TODO change
+
         val telephony = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-//        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
+        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
     }
 
     /**
-     * @param station - object of Station class
+     * @param stg- short description of station
      * @param type - <code>0</code> empty prefix
      *               <code>1</code> current station prefix
      *               <code>2</code> next station prefix
@@ -88,7 +87,7 @@ class AudioController(private val context: Context) :
         am.setStreamVolume(AudioManager.STREAM_NOTIFICATION, index, 0)
     }
 
-    fun onDestroy() {
+    fun cancel() {
         player.release()
         tts.stop()
         tts.shutdown()
@@ -114,7 +113,7 @@ class AudioController(private val context: Context) :
         try {
             when (type) {
                 0 -> {
-                    val uri = Environment.getExternalStorageDirectory().path + VOICE_PATH + station+ ".3gp"
+                    val uri = Environment.getExternalStorageDirectory().path + VOICE_PATH + station + ".3gp"
                     player = MediaPlayer.create(context, Uri.parse(uri))
                     station = null
                 }

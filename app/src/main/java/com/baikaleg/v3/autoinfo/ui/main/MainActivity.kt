@@ -2,6 +2,7 @@ package com.baikaleg.v3.autoinfo.ui.main
 
 import android.Manifest
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -13,10 +14,20 @@ import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
+import com.baikaleg.v3.autoinfo.service.stationsearch.createLocationRequest
 import com.baikaleg.v3.autoinfo.ui.routes.RouteActivity
 import com.baikaleg.v3.autoinfo.ui.settings.SettingsActivity
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+
+
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
+private const val REQUEST_CHECK_SETTINGS = 202
+private const val REQUEST_GOOGLE_PLAY_SERVICES=203
 
 class MainActivity : AppCompatActivity(),
         ActivityCompat.OnRequestPermissionsResultCallback,
@@ -28,7 +39,7 @@ class MainActivity : AppCompatActivity(),
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == REQUEST_ACCESS_FINE_LOCATION) {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                viewModel.startService()
+                viewModel.checkLocationSettings()
             } else {
                 Toast.makeText(this, R.string.msg_use_location_not_allowed, Toast.LENGTH_SHORT).show()
             }
@@ -54,21 +65,25 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+        return when (item?.itemId) {
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
-                return true
+                true
             }
             R.id.routes -> {
                 val intent = Intent(this, RouteActivity::class.java)
                 startActivity(intent)
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.refreshUI()
+    }
 
     override fun onDestroy() {
         viewModel.cancel()
@@ -82,5 +97,36 @@ class MainActivity : AppCompatActivity(),
 
     override fun onMessageReceived(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onLocationSettingsRequest() {
+        val locationRequest = createLocationRequest(2000)
+        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+        val client: SettingsClient = LocationServices.getSettingsClient(this)
+        val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
+        task.addOnSuccessListener {
+            viewModel.runService()
+        }
+        task.addOnFailureListener { exception ->
+            if (exception is ResolvableApiException) {
+                try {
+                    exception.startResolutionForResult(this, REQUEST_CHECK_SETTINGS)
+                } catch (sendEx: IntentSender.SendIntentException) {
+                }
+            }
+        }
+    }
+
+    override fun isGooglePlayServicesAvailable(): Boolean {
+        val googleAPI = GoogleApiAvailability.getInstance()
+        val result = googleAPI.isGooglePlayServicesAvailable(this)
+        if (result != ConnectionResult.SUCCESS) {
+            if (googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(this, result,
+                        REQUEST_GOOGLE_PLAY_SERVICES).show()
+            }
+            return false
+        }
+        return true
     }
 }

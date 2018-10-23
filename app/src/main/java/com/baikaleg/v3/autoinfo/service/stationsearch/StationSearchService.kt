@@ -99,6 +99,7 @@ class StationSearchService : Service() {
         stopLocationUpdates()
         super.onDestroy()
         compositeDisposable.clear()
+        audioSystem.cancel()
     }
 
     @SuppressWarnings("MissingPermission")

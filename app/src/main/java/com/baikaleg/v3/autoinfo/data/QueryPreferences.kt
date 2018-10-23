@@ -2,6 +2,7 @@ package com.baikaleg.v3.autoinfo.data
 
 import android.content.Context
 import android.preference.PreferenceManager
+import com.baikaleg.v3.autoinfo.R
 
 private const val PREF_ROUTE_QUERY = "route"
 private const val PREF_ANNOUNCE_AUDIO_TYPE_QUERY = "announce_audio_type"
@@ -20,7 +21,7 @@ class QueryPreferences(private val context: Context) {
     fun getRoute(): String {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getString(PREF_ROUTE_QUERY, null)
+                .getString(PREF_ROUTE_QUERY, context.getString(R.string.route_is_not_selected))
     }
 
     fun setRoute(route: String) {

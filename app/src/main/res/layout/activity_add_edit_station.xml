@@ -47,9 +47,9 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="50dp"
                         android:layout_marginStart="50dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginEnd="50dp"
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@{viewmodel.stations.size != 0 ? @string/direction(viewmodel.stations.get(0).shortDescription,viewmodel.stations.get(viewmodel.stations.size()-1).shortDescription ) : ``}"
@@ -60,10 +60,11 @@
                         android:id="@+id/short_description"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
                         android:hint="@string/station"
+                        android:inputType="text"
                         android:maxLines="1"
                         android:padding="8dp"
                         android:text="@={viewmodel.shortDescription}" />
@@ -85,8 +86,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:layout_marginEnd="8dp"
                             android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:orientation="horizontal"
                             android:weightSum="2">
 
@@ -128,7 +129,7 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_play_voice"
                             android:elevation="@dimen/btn_elevation"
-                            android:onClick="@{() -> viewmodel.playVoice()}"
+                            android:onClick="@{() -> viewmodel.onPlayVoiceBtnClick()}"
                             app:srcCompat="@drawable/ic_play" />
 
                         <ImageButton
@@ -139,7 +140,7 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_detect_current_location"
                             android:elevation="@dimen/btn_elevation"
-                            android:onClick="@{() -> viewmodel.requestLocationPermission()}"
+                            android:onClick="@{() -> viewmodel.onRequestLocationPermissionBtnClick()}"
                             app:srcCompat="@drawable/ic_add_location" />
 
                         <ImageButton
@@ -150,21 +151,31 @@
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_detect_current_location"
                             android:elevation="@dimen/btn_elevation"
-                            android:onClick="@{()->viewmodel.saveStation()}"
-                            app:srcCompat="@drawable/ic_add" />
+                            android:onClick="@{()->viewmodel.onSaveBtnClick()}"
+                            app:srcCompat="@drawable/ic_save" />
 
                         <ImageButton
                             android:id="@+id/mic_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
                             android:layout_margin="@dimen/general_margin"
                             android:background="@drawable/btn_click"
                             android:contentDescription="@string/cd_record_voice"
                             android:elevation="@dimen/btn_elevation"
-                            android:onClick="@{() -> viewmodel.requestAudioRecordPermission()}"
+                            android:onClick="@{() -> viewmodel.onRequestAudioRecordPermissionBtnClick()}"
                             android:visibility="@{viewmodel.isTTS() ? View.GONE : View.VISIBLE , default=gone}"
                             app:srcCompat="@drawable/ic_mic" />
+
+                        <ImageButton
+                            android:id="@+id/refresh"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/general_margin"
+                            android:background="@drawable/btn_click"
+                            android:contentDescription="@string/cd_refresh"
+                            android:elevation="@dimen/btn_elevation"
+                            android:onClick="@{() -> viewmodel.onRefreshBtnClick()}"
+                            app:srcCompat="@drawable/ic_refresh" />
 
                     </LinearLayout>
                 </LinearLayout>
