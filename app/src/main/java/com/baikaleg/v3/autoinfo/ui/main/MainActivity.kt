@@ -1,15 +1,19 @@
 package com.baikaleg.v3.autoinfo.ui.main
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
@@ -23,11 +27,9 @@ import com.google.android.gms.tasks.Task
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 
-
-
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
 private const val REQUEST_CHECK_SETTINGS = 202
-private const val REQUEST_GOOGLE_PLAY_SERVICES=203
+private const val REQUEST_GOOGLE_PLAY_SERVICES = 203
 
 class MainActivity : AppCompatActivity(),
         ActivityCompat.OnRequestPermissionsResultCallback,
@@ -46,6 +48,14 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            if (resultCode == Activity.RESULT_OK) {
+                viewModel.runService()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding =
@@ -57,6 +67,14 @@ class MainActivity : AppCompatActivity(),
 
         binding.viewmodel = viewModel
         binding.setLifecycleOwner(this)
+
+        val diameter = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            resources.displayMetrics.heightPixels * 0.65
+        } else {
+            resources.displayMetrics.widthPixels * 0.75
+        }
+        binding.container.stopGoBtn.layoutParams.height = diameter.toInt()
+        binding.container.stopGoBtn.layoutParams.width = diameter.toInt()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -83,11 +101,6 @@ class MainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         viewModel.refreshUI()
-    }
-
-    override fun onDestroy() {
-        viewModel.cancel()
-        super.onDestroy()
     }
 
     override fun onLocationPermissionRequest() {

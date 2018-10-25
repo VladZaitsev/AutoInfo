@@ -18,23 +18,13 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{viewmodel.route}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintBottom_toTopOf="@id/stop_go_btn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/stop_go_title"
-            android:text="@{viewmodel.state ? @string/start : @string/stop,default=@string/stop}"
-            android:textColor="@color/colorPrimaryDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:elevation="8dp"
+            android:text="@{viewmodel.state ? @string/start : @string/stop,default=@string/stop}"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2"
+            android:textColor="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="@+id/stop_go_btn"
             app:layout_constraintEnd_toEndOf="@+id/stop_go_btn"
             app:layout_constraintStart_toStartOf="@+id/stop_go_btn"
@@ -44,24 +34,44 @@
             android:id="@+id/stop_go_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="50dp"
             android:background="@{viewmodel.state ? @drawable/btn_start : @drawable/btn_stop, default=@drawable/btn_start}"
             android:contentDescription="@string/cd_start_stop_btn"
             android:elevation="6dp"
             android:onClick="@{()->viewmodel.onStartBtnClick()}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            android:id="@+id/route_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="@{viewmodel.route}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            app:layout_constraintBottom_toTopOf="@+id/station_txt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/stop_go_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/station_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
             android:text="@{viewmodel.station}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stop_go_btn" />
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/stop_go_title"
+            app:layout_constraintTop_toBottomOf="@+id/route_txt" />
+
     </android.support.constraint.ConstraintLayout>
 </layout>
 

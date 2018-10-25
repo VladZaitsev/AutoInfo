@@ -42,7 +42,7 @@ class AddEditRouteDialog : DialogFragment() {
                         viewModel.saveRoute()
                         dismiss()
                     }
-                    .setNegativeButton(getString(R.string.cancel)) { _, _ -> dismiss() }
+                    .setNegativeButton(getString(android.R.string.cancel)) { _, _ -> dismiss() }
                     .create()
             return dialog.create()
         }

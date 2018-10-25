@@ -60,7 +60,7 @@ class ImportRouteDialog : DialogFragment() {
         try {
             path.mkdirs()
         } catch (e: SecurityException) {
-            Toast.makeText(activity, getString(R.string.unable_to_wrote_file), Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, getString(R.string.msg_unable_to_wrote_file), Toast.LENGTH_SHORT).show()
         }
         if (path.exists()) {
             val filter = FilenameFilter { dir, filename ->

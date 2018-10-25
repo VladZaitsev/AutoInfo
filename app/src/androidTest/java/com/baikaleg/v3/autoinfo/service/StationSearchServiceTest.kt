@@ -14,7 +14,6 @@ import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
 import org.hamcrest.Matchers.empty
 import org.hamcrest.Matchers.equalTo
 import org.json.JSONArray
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Ignore
@@ -31,13 +30,13 @@ fun loadStationsList(context: Context): List<Station> {
     for (i in 0 until (array.length())) {
         val jsonObject = array.getJSONObject(i)
         val station = Station(
-                jsonObject.getString("route"),
+                jsonObject.getInt("num"),
                 jsonObject.getString("short_description"),
+                jsonObject.getString("description"),
                 jsonObject.getDouble("latitude"),
                 jsonObject.getDouble("longitude"),
-                jsonObject.getBoolean("type")
+                jsonObject.getBoolean("isDirect")
         )
-        station.id = jsonObject.getLong("id")
         stations.add(station)
     }
     return stations
@@ -115,11 +114,12 @@ class StationSearchServiceTest {
         assertThat(nextStationsListToTest, empty())
     }
 
+    @Ignore
     @Test
     fun testWithImmediateNextStationsAnnouncementInOneDirection() {
         val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
         val pref = QueryPreferences(InstrumentationRegistry.getTargetContext())
-        pref.setAnnounceStationType(ANNOUNCE_STATION_TYPE_NEXT)
+        pref.setAnnounceStationType(ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY)
 
         val binder: IBinder = mServiceRule.bindService(intent)
         val service = (binder as StationSearchService.StationSearchBinder).getService()
@@ -127,7 +127,7 @@ class StationSearchServiceTest {
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoData) {
-            Thread.sleep(500)
+            Thread.sleep(100)
             service.announceNearestStation(
                     data.latitude,
                     data.longitude,
@@ -148,13 +148,14 @@ class StationSearchServiceTest {
         }
 
         val tempNextStationsList: MutableList<Station> = stations.asSequence()
-                .filter { station -> station.id != 0L }
+                .filter { station -> station.num != 0 }
                 .filter { station -> station.isDirect }
                 .toMutableList()
 
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
     }
-/*
+
+    @Ignore
     @Test
     fun testWithDelayNextStationsAnnouncementInOneDirection() {
         val intent = Intent(InstrumentationRegistry.getTargetContext(), StationSearchService::class.java)
@@ -167,17 +168,19 @@ class StationSearchServiceTest {
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoData) {
+            Thread.sleep(100)
             service.announceNearestStation(
                     data.latitude,
                     data.longitude,
                     stations,
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
-
+                            audioSystem.announceStation(station.shortDescription, 1)
                         }
 
                         override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
+                            audioSystem.announceStation(station.shortDescription, 2)
                         }
 
                         override fun isDirectionChanged(b: Boolean) {
@@ -186,8 +189,8 @@ class StationSearchServiceTest {
         }
 
         val tempNextStationsList: MutableList<Station> = stations
-                .filter { station -> station.id != 0L }
-                .filter { station -> station.route_type == 0 }
+                .filter { station -> station.num != 0 }
+                .filter { station -> station.isDirect }
                 .toMutableList()
 
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
@@ -206,34 +209,34 @@ class StationSearchServiceTest {
         val nextStationsListToTest: MutableList<Station> = mutableListOf()
 
         for (data in geoReverseData) {
+            Thread.sleep(100)
             service.announceNearestStation(
                     data.latitude,
                     data.longitude,
                     stations,
                     object : StationSearchService.OnStationStateChanged {
                         override fun announceCurrentStation(station: Station) {
-                            currentStationsListToTest.add(station)
+                            //audioSystem.announceStation(station.shortDescription, 1)
                         }
 
                         override fun announceNextStation(station: Station) {
                             nextStationsListToTest.add(station)
+                            //audioSystem.announceStation(station.shortDescription, 2)
                         }
 
                         override fun isDirectionChanged(b: Boolean) {
-
                         }
                     })
         }
-        val tempCurrentStationsList: MutableList<Station> = stations.filter { station -> station.id != 7L }.toMutableList()
+        val tempCurrentStationsList: MutableList<Station> = stations.filter { station -> station.num != 7 }.toMutableList()
         val tempNextStationsList: MutableList<Station> = stations
-                .filter { station -> station.id != 0L }
-                .filter { station -> station.id != 7L }
-                .filter { station -> station.id != 8L }
+                .filter { station -> station.num != 0 }
+                .filter { station -> station.num != 7 }
+                .filter { station -> station.num != 8 }
                 .toMutableList()
 
         assertThat(currentStationsListToTest, equalTo(tempCurrentStationsList))
         assertThat(nextStationsListToTest, equalTo(tempNextStationsList))
     }
-    */
 
 }

@@ -1,5 +1,6 @@
 package com.baikaleg.v3.autoinfo.ui.stations.station
 
+import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup

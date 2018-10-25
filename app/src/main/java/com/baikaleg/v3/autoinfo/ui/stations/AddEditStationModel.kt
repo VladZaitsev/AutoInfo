@@ -87,7 +87,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
                     allStations.addAll(it.stations)
                     stations.postValue(allStations.asSequence()
                             .filter { station -> station.isDirect == isDirect }
-                            .sortedBy { station -> station.id }
+                            .sortedBy { station -> station.num }
                             .toMutableList())
                     refresh()
                 })
@@ -96,16 +96,16 @@ class AddEditStationModel(application: Application, val route: Route, private va
     fun onMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition != toPosition) {
             var index = allStations.indexOf(stations.value!![fromPosition])
-            allStations[index].id = toPosition + 1
+            allStations[index].num = toPosition + 1
             if (fromPosition > toPosition) {
                 for (i in toPosition until fromPosition) {
                     index = allStations.indexOf(stations.value!![i])
-                    allStations[index].id = allStations[index].id + 1
+                    allStations[index].num = allStations[index].num + 1
                 }
             } else {
                 for (i in fromPosition + 1..toPosition) {
                     index = allStations.indexOf(stations.value!![i])
-                    allStations[index].id = allStations[index].id - 1
+                    allStations[index].num = allStations[index].num - 1
                 }
             }
             route.stations = allStations
@@ -117,7 +117,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
         if (position != stations.value!!.size) {
             for (i in position until stations.value!!.size) {
                 val index = allStations.indexOf(stations.value!![i])
-                allStations[index].id = allStations[index].id - 1
+                allStations[index].num = allStations[index].num - 1
             }
             val index = allStations.indexOf(stations.value!![position])
             allStations.removeAt(index)
@@ -139,7 +139,7 @@ class AddEditStationModel(application: Application, val route: Route, private va
             isDirect = !isDirect
             stations.value = allStations.asSequence()
                     .filter { station -> station.isDirect == isDirect }
-                    .sortedBy { station -> station.id }
+                    .sortedBy { station -> station.num }
                     .toMutableList()
         }
     }

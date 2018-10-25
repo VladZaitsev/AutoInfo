@@ -5,7 +5,7 @@
         android:id="@+id/change_direction"
         android:icon="@drawable/ic_swap_vert"
         app:showAsAction="ifRoom"
-        android:title="@string/change_direction" />
+        android:title="@string/action_change_direction" />
     <item
         android:id="@+id/select_route"
         android:orderInCategory="100"

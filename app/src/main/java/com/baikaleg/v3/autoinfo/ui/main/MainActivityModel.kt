@@ -49,6 +49,10 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         return route
     }
 
+    fun getStation(): LiveData<String> {
+        return station
+    }
+
     private val bcReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val status = intent?.getIntExtra(PARAM_STATUS, 0)
@@ -63,11 +67,10 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
     init {
         if (isServiceRunning()) {
             state.postValue(false)
+            getApplication<Application>().registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
         } else {
             state.postValue(true)
         }
-
-        getApplication<Application>().registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
     }
 
     companion object {
@@ -78,6 +81,7 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
 
     fun refreshUI() {
         route.postValue(pref.getRoute())
+
     }
 
     fun onStartBtnClick() {
@@ -102,10 +106,6 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         startService()
     }
 
-    fun cancel() {
-        getApplication<Application>().unregisterReceiver(bcReceiver)
-    }
-
     fun setNavigator(nav: StationSearchNavigator) {
         navigator = nav
     }
@@ -113,10 +113,12 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
     private fun startService() {
         val intent = Intent(getApplication(), StationSearchService::class.java)
         getApplication<Application>().startService(intent)
+        getApplication<Application>().registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
     }
 
     private fun stopService() {
         getApplication<Application>().stopService(Intent(getApplication(), StationSearchService::class.java))
+        getApplication<Application>().unregisterReceiver(bcReceiver)
     }
 
     private fun isLocationControlAllowed(): Boolean {

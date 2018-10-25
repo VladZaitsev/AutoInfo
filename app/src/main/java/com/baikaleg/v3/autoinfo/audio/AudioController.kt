@@ -55,7 +55,7 @@ class AudioController(private val context: Context) :
         }
 
         val telephony = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
+//        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
     }
 
     /**

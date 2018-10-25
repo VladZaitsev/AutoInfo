@@ -23,7 +23,8 @@
         android:theme="@style/AppTheme.NoActionBar">
         <activity
             android:name=".ui.main.MainActivity"
-            android:label="@string/title_activity_main">
+            android:label="@string/title_activity_main"
+            android:noHistory="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

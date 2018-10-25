@@ -114,6 +114,7 @@ class StationSearchService : Service() {
                             fullStationsList,
                             object : OnStationStateChanged {
                                 override fun announceCurrentStation(station: Station) {
+                                    displayStationDescription(station.shortDescription)
                                     if (announcementType == ANNOUNCE_STATION_TYPE_EMPTY)
                                         audioSystem.announceStation(station.shortDescription, 0)
                                     else if (announcementType == ANNOUNCE_STATION_TYPE_CURRENT) {
@@ -163,7 +164,7 @@ class StationSearchService : Service() {
                             isDirectionChanged = false
                             prevIndex = index
                             if (announcementType == ANNOUNCE_STATION_TYPE_NEXT) {
-                                Thread.sleep(2000)
+                                Thread.sleep(5000)
                                 listener.announceNextStation(stations[index + 1])
                             }
                         }

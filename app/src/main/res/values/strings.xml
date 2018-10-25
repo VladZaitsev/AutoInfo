@@ -1,19 +1,20 @@
 <resources>
+    <!--Titles -->
     <string name="app_name">AutoInfo</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main" translatable="false">AutoInfo</string>
     <string name="title_activity_route">RouteActivity</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="chose_file_imported_route">Choose file</string>
+    <string name="change_station_request">Do you really want to change station %1$s ?</string>
 
-    <string name="msg_use_location_not_allowed">You did not allow use location service</string>
     <string name="notif_content">AutoInfo is active</string>
-    <string name="msg_wrong_direction">You go in the wrong direction</string>
 
     <!--TTS -->
-    <string name="station_tts">Остановка,</string>
-    <string name="next_station_tts">Следующая остановка,</string>
+    <string name="station_tts">Station,</string>
+    <string name="next_station_tts">Next station,</string>
 
     <!--content description -->
     <string name="cd_change_route_direction">change route direction</string>
-    <string name="cd_load_file_with_voice">load file with voice</string>
     <string name="cd_record_voice">record voice</string>
     <string name="cd_play_voice">play voice</string>
     <string name="cd_detect_current_location">detect current location</string>
@@ -23,54 +24,54 @@
     <string name="station">station</string>
     <string name="latitude">latitude</string>
     <string name="longitude">longitude</string>
-    <string name="direction">%1$s - %2$s</string>
-    <string name="cancel">cancel</string>
-
-    <string name="title_activity_settings">Settings</string>
+    <string name="direction" translatable="false">%1$s - %2$s</string>
+    <string name="city">City</string>
+    <string name="is_circle">is circle?</string>
 
     <!-- Strings related to Settings -->
     <string name="pref_title_audio_type">Type of audio source</string>
     <string name="pref_title_station_type">Type of stations announcement</string>
 
-    <string name="pref_audio_tts">tts</string>
-    <string name="pref_audio_file">from file</string>
+    <string name="pref_audio_tts">TTS ()</string>
+    <string name="pref_audio_file">From file</string>
 
     <string name="station_type_list_key" translatable="false">station_type_list_key</string>
     <string name="audio_type_list_key" translatable="false">audio_type_list_key</string>
 
-    <string name="pref_station_empty">ANNOUNCE_STATION_TYPE_EMPTY</string>
-    <string name="pref_station_current">ANNOUNCE_STATION_TYPE_CURRENT</string>
-    <string name="pref_station_with_next">ANNOUNCE_STATION_TYPE_NEXT</string>
-    <string name="pref_station_with_next_with_delay">ANNOUNCE_STATION_TYPE_NEXT_WITH_DELAY</string>
+    <string name="pref_station_empty">Simple announcement</string>
+    <string name="pref_station_current">Announcement with \"Station\"</string>
+    <string name="pref_station_with_next">Announcement with \"Station\" and \"Next station\"</string>
+    <string name="pref_station_with_next_with_delay">Announcement with \"Station\" and \"Next station\" after station is far away</string>
 
     <!-- Messages -->
     <string name="msg_storage_writing_not_allowed">You not allowed storage using</string>
     <string name="msg_audio_record_not_allowed">You not allowed audio recording</string>
-    <string name="msg_enter_description">Please, type the description of the station</string>
-    <string name="msg_enter_latitude">Please, type the latitude of the station</string>
-    <string name="msg_enter_longitude">Please, type the longitude of the station</string>
+    <string name="msg_enter_description">Please, enter the description of the station</string>
+    <string name="msg_enter_latitude">Please, enter the latitude of the station</string>
+    <string name="msg_enter_longitude">Please, enter the longitude of the station</string>
     <string name="msg_you_also_have_this_station">You also have this station</string>
     <string name="msg_you_donnot_have_record">You do not have record</string>
+    <string name="msg_export_is_done">Export is done</string>
+    <string name="msg_wrong_direction">You go in the wrong direction</string>
+    <string name="msg_use_location_not_allowed">You did not allow use location service</string>
+    <string name="msg_something_wrong_in_importing">Something_wrong in directory creation</string>
+    <string name="msg_something_wrong_in_file_creation">Something wrong in file creation</string>
+    <string name="msg_audio_voice_created">Audio voice created</string>
+    <string name="msg_unable_to_wrote_file">Unable to write on the sd card</string>
 
     <string name="action_routes">Routes</string>
     <string name="action_settings">Settings</string>
-    <string name="action_add_route">add route</string>
-    <string name="save">Save</string>
-    <string name="route">route</string>
-    <string name="routes">Routes</string>
+    <string name="action_add_route">Add route</string>
     <string name="action_export">Export</string>
-    <string name="action_import">Imoprt</string>
-    <string name="export_is_done">Export is done</string>
-    <string name="something_wrong_in_importing">something_wrong in directory creation</string>
-    <string name="something_wrong_in_file_creation">Something wrong in file creation</string>
+    <string name="action_import">Import</string>
     <string name="action_select">Select</string>
-    <string name="change_direction">Change direction</string>
-    <string name="msg_audio_voice_created">Audio voice created</string>
-    <string name="chose_file_imported_route">Choose file</string>
-    <string name="unable_to_wrote_file">unable to write on the sd card</string>
-    <string name="city">city</string>
-    <string name="is_circle">is circle?</string>
-    <string name="route_is_not_selected">Route is not selected</string>
-    <string name="change_station_request">Do you really want to change station %1$s?</string>
+    <string name="action_change_direction">Change direction</string>
 
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="save">Save</string>
+    <string name="route">Route</string>
+    <string name="routes">Routes</string>
+
+    <string name="route_is_not_selected">Route is not selected</string>
 </resources>

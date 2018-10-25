@@ -24,7 +24,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_margin="@dimen/general_margin"
-                android:text="@{``+viewmodel.data.id}"
+                android:text="@{``+viewmodel.data.num}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <TextView

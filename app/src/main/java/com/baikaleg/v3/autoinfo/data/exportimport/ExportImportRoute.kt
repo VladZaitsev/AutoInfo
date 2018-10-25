@@ -33,7 +33,7 @@ fun stationsToJSON(stations: List<Station>): JSONArray {
     val array = JSONArray()
     for (s in stations) {
         val o = JSONObject()
-        o.put(ORDER_NUMBER, s.id)
+        o.put(ORDER_NUMBER, s.num)
         o.put(DESCRIPTION, s.description)
         o.put(SHORT_DESCRIPTION, s.shortDescription)
         o.put(LATITUDE, s.latitude)
@@ -77,7 +77,7 @@ class ExportImportRoute(val context: Context) {
     fun importFromFile(fileName: String) {
         val body = readFromFile(fileName)
         if (body == "[]" || body.isEmpty()) {
-            Toast.makeText(context, context.getString(R.string.something_wrong_in_importing), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.msg_something_wrong_in_importing), Toast.LENGTH_SHORT).show()
             return
         }
         repository.saveRoute(jsonArrayToRoute(body))
@@ -111,7 +111,7 @@ class ExportImportRoute(val context: Context) {
             writer.append(body)
             writer.flush()
             writer.close()
-            Toast.makeText(context, context.getString(R.string.export_is_done), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.msg_export_is_done), Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {
             e.printStackTrace()
         }

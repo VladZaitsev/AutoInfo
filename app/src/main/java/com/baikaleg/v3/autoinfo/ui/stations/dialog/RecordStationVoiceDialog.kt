@@ -62,7 +62,7 @@ open class RecordStationVoiceDialog : DialogFragment() {
         return AlertDialog.Builder(activity)
                 .setView(view)
                 .setTitle("Нажмите для записи голоса")
-                .setNegativeButton(activity.getString(R.string.cancel)){ _, _ -> dismiss() }
+                .setNegativeButton(activity.getString(android.R.string.cancel)){ _, _ -> dismiss() }
                 .create()
                 .apply { setCanceledOnTouchOutside(false) }
     }
