@@ -38,6 +38,7 @@ class AudioController(private val context: Context) :
     private val tts: TextToSpeech = TextToSpeech(context, this)
     private val pref = QueryPreferences(context)
     private val am: AudioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val maxVolume = am.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -55,7 +56,7 @@ class AudioController(private val context: Context) :
         }
 
         val telephony = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-//        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
+        telephony.listen(StatePhoneReceiver(), PhoneStateListener.LISTEN_CALL_STATE)
     }
 
     /**

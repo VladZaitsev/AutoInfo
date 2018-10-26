@@ -16,8 +16,8 @@ import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.baikaleg.v3.autoinfo.data.QueryPreferences
-import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
 import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchService
+
 
 const val BROADCAST_ACTION = "com.baikaleg.v3.autoinfo.br"
 const val PARAM_STATUS = "status"
@@ -114,11 +114,13 @@ class MainActivityModel(application: Application) : AndroidViewModel(application
         val intent = Intent(getApplication(), StationSearchService::class.java)
         getApplication<Application>().startService(intent)
         getApplication<Application>().registerReceiver(bcReceiver, IntentFilter(BROADCAST_ACTION))
+        navigator.onServiceStateChanged(true)
     }
 
     private fun stopService() {
         getApplication<Application>().stopService(Intent(getApplication(), StationSearchService::class.java))
         getApplication<Application>().unregisterReceiver(bcReceiver)
+        navigator.onServiceStateChanged(false)
     }
 
     private fun isLocationControlAllowed(): Boolean {

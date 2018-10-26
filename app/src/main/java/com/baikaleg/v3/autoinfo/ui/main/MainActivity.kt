@@ -12,20 +12,20 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.Toast
 import com.baikaleg.v3.autoinfo.R
 import com.baikaleg.v3.autoinfo.databinding.ActivityMainBinding
-import com.baikaleg.v3.autoinfo.service.stationsearch.StationSearchNavigator
 import com.baikaleg.v3.autoinfo.service.stationsearch.createLocationRequest
 import com.baikaleg.v3.autoinfo.ui.routes.RouteActivity
 import com.baikaleg.v3.autoinfo.ui.settings.SettingsActivity
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsResponse
+import com.google.android.gms.location.SettingsClient
+import com.google.android.gms.tasks.Task
 
 private const val REQUEST_ACCESS_FINE_LOCATION = 201
 private const val REQUEST_CHECK_SETTINGS = 202
@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity(),
 
 
     private lateinit var viewModel: MainActivityModel
+    private var settingsMenuItem: MenuItem? = null
+    private var routesMenuItem: MenuItem? = null
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == REQUEST_ACCESS_FINE_LOCATION) {
@@ -79,17 +81,19 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
+        settingsMenuItem = menu?.findItem(R.id.settings_main_menu)
+        routesMenuItem = menu?.findItem(R.id.routes_main_menu)
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
-            R.id.settings -> {
+            R.id.settings_main_menu -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
                 true
             }
-            R.id.routes -> {
+            R.id.routes_main_menu -> {
                 val intent = Intent(this, RouteActivity::class.java)
                 startActivity(intent)
                 true
@@ -141,5 +145,10 @@ class MainActivity : AppCompatActivity(),
             return false
         }
         return true
+    }
+
+    override fun onServiceStateChanged(isRunning: Boolean) {
+        settingsMenuItem?.setVisible(!isRunning)
+        routesMenuItem?.setVisible(!isRunning)
     }
 }

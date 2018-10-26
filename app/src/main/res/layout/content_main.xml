@@ -29,12 +29,12 @@
 
         <TextView
             android:id="@+id/stop_go_title"
-            android:text="@{viewmodel.state ? @string/start : @string/stop,default=@string/stop}"
-            android:textColor="@color/colorPrimaryDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:elevation="8dp"
+            android:text="@{viewmodel.state ? @string/start : @string/stop,default=@string/stop}"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2"
+            android:textColor="@color/colorPrimaryDark"
             app:layout_constraintBottom_toBottomOf="@+id/stop_go_btn"
             app:layout_constraintEnd_toEndOf="@+id/stop_go_btn"
             app:layout_constraintStart_toStartOf="@+id/stop_go_btn"

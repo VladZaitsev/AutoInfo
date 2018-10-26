@@ -117,7 +117,7 @@ class StationSearchService : Service() {
                                     displayStationDescription(station.shortDescription)
                                     if (announcementType == ANNOUNCE_STATION_TYPE_EMPTY)
                                         audioSystem.announceStation(station.shortDescription, 0)
-                                    else if (announcementType == ANNOUNCE_STATION_TYPE_CURRENT) {
+                                    else {
                                         audioSystem.announceStation(station.shortDescription, 1)
                                     }
                                 }

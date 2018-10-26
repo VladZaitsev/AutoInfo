@@ -1,4 +1,4 @@
-package com.baikaleg.v3.autoinfo.service.stationsearch
+package com.baikaleg.v3.autoinfo.ui.main
 
 interface StationSearchNavigator {
 
@@ -9,5 +9,7 @@ interface StationSearchNavigator {
     fun onLocationSettingsRequest()
 
     fun isGooglePlayServicesAvailable(): Boolean
+
+    fun onServiceStateChanged(isRunning:Boolean)
 
 }
